@@ -7,6 +7,7 @@ package com.isysdcore.genericAutoCrud.generics;
 
 
 import com.isysdcore.genericAutoCrud.utils.DefaultSearchParameters;
+import lombok.Setter;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 
@@ -26,6 +27,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class GenericModelAssembler<T> implements RepresentationModelAssembler<T, EntityModel<T>> {
 
     GenericRestController<T, ?> controllerClass;
+    @Setter
     DefaultSearchParameters parameters;
 
     public GenericModelAssembler(GenericRestController<T, ?> controllerClass) {
@@ -50,10 +52,6 @@ public class GenericModelAssembler<T> implements RepresentationModelAssembler<T,
             return null;
         }
 
-    }
-
-    public void setParameters(DefaultSearchParameters parameters) {
-        this.parameters = parameters;
     }
 
 }

@@ -25,6 +25,13 @@ public class DefaultSearchParameters {
     private int sort = 1;
     private String query = "id==*";
 
+    /**
+     *
+     * @param actualPage
+     * @param actualSize
+     * @param actualSort
+     * @return
+     */
     public static Pageable preparePages(int actualPage, int actualSize, int actualSort) {
 
         return actualSort > 0 ? PageRequest.of(actualPage, actualSize, Sort.by("cratedAt").ascending())
