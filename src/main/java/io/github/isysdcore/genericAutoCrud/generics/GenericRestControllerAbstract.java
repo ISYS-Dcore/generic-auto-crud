@@ -18,9 +18,16 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  *
+ * @param <T> The Entity class that represent the database entity
+ * @param <K> The Class type that represent the id field datatype of entity of type T
+ */
+
+/**
+ *
  * @author domingos.fernando
- * @param <T>
- * @param <S>
+ * @param <T> The Entity class that represent the database entity
+ * @param <S> The service Implementation that already modified by entity injection
+ * @param <K> The Class type that represent the id field datatype of entity of type T
  */
 public abstract class GenericRestControllerAbstract<T, S extends GenericRestServiceAbstract<T,?,K>, K> implements GenericRestController<T, K> {
 

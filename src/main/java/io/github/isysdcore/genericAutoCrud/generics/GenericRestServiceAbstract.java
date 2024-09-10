@@ -25,8 +25,9 @@ import java.util.logging.Logger;
 /**
  *
  * @author domingos.fernando
- * @param <T>
- * @param <R>
+ * @param <T> The Entity class that represent the database entity
+ * @param <K> The Class type that represent the id field datatype of entity of type T
+ * @param <R> The generic Repository modified by entity and id datatype injected
  */
 public abstract class GenericRestServiceAbstract<T, R extends GenericRepository<T,K>, K>
         implements GenericRestService<T, K> {

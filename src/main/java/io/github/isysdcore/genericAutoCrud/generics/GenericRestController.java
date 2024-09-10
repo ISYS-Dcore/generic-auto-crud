@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 /**
  *
  * @author domingos.fernando
- * @param <T>
+ * @param <T> The Entity class that represent the database entity
+ * @param <K> The Class type that represent the id field datatype of entity of type T
  */
 public interface GenericRestController<T, K> {
 
