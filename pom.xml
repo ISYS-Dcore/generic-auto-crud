@@ -8,7 +8,7 @@
   <packaging>jar</packaging>
 
   <name>generic-auto-crud</name>
-  <url>http://maven.apache.org</url>
+  <url>https://github.com/ISYS-Dcore/generic-auto-crud</url>
   <description>
     This project is a library for speedup spring boot api crud development  in Java.
     USE THIS IN PRODUCTION BY YOUR OWN RISK. IT WAS CREATED FOR PERSONAL PROJECTS BUT WORKS WELL.
@@ -26,10 +26,14 @@
       <name>Domingos Masta</name>
       <email>e1000014692@gmail.com</email>
       <organization>ISYS - Dcore</organization>
-      <organizationUrl>https://isys-dcore.com</organizationUrl>
+      <organizationUrl>https://github.com/ISYS-Dcore</organizationUrl>
     </developer>
   </developers>
-
+  <scm>
+    <connection>scm:git@github.com:ISYS-Dcore/generic-auto-crud.git</connection>
+    <developerConnection>scm:git@github.com:ISYS-Dcore/generic-auto-crud.git</developerConnection>
+    <url>https://github.com/ISYS-Dcore/generic-auto-crud/tree/main</url>
+  </scm>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>17</maven.compiler.source>
@@ -95,6 +99,16 @@
       <version>10.1.24</version>
     </dependency>
   </dependencies>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
   <build>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
@@ -152,4 +166,62 @@
       </plugins>
     </pluginManagement>
   </build>
+  <profiles>
+    <profile>
+      <id>release</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.2.3</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.6.2</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.2.1</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
