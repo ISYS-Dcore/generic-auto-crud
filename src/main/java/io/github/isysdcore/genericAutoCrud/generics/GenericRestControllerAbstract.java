@@ -3,12 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.isysdcore.genericAutoCrud.generics;
+package io.github.isysdcore.genericAutoCrud.generics;
 
 
-import com.isysdcore.genericAutoCrud.utils.ApiError;
-import com.isysdcore.genericAutoCrud.utils.Constants;
-import com.isysdcore.genericAutoCrud.utils.DefaultSearchParameters;
+import io.github.isysdcore.genericAutoCrud.utils.Constants;
+import io.github.isysdcore.genericAutoCrud.utils.DefaultSearchParameters;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;

@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.isysdcore.genericAutoCrud.generics;
+package io.github.isysdcore.genericAutoCrud.generics;
 
-import com.isysdcore.genericAutoCrud.query.CustomRsqlVisitor;
-import com.isysdcore.genericAutoCrud.utils.DefaultSearchParameters;
+import io.github.isysdcore.genericAutoCrud.query.CustomRsqlVisitor;
+import io.github.isysdcore.genericAutoCrud.utils.DefaultSearchParameters;
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.Node;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.isysdcore.genericAutoCrud.generics;
+package io.github.isysdcore.genericAutoCrud.generics;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;

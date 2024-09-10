@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.isysdcore.genericAutoCrud.ex;
+package io.github.isysdcore.genericAutoCrud.ex;
 
-import com.isysdcore.genericAutoCrud.utils.ApiError;
+import io.github.isysdcore.genericAutoCrud.utils.ApiError;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.TypeMismatchException;
