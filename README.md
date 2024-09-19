@@ -14,5 +14,5 @@ Java Spring boot Generic auto Crud helper, is a library to generalize the procce
 
 ## Licença
 
-[Apache V2](https://choosealicense.com/licenses/mit/)
+[mpl-2.0](https://choosealicense.com/licenses/mpl-2.0/)
 
