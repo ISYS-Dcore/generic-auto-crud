@@ -37,7 +37,16 @@ public abstract class GenericRestServiceAbstract<T, R extends GenericRepository<
 
     @Override
     public T save(T newEntity) {
-        return repository.save(newEntity);
+       try{
+           Field fdCreatedAt = newEntity.getClass().getSuperclass().getDeclaredField("cratedAt");
+           fdCreatedAt.setAccessible(true);
+           fdCreatedAt.set(newEntity, Calendar.getInstance().getTime());
+           return repository.save(newEntity);
+        } catch (NoSuchFieldException | IllegalAccessException ex) {
+            Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+        }
+        return null;
     }
 
     @Override
