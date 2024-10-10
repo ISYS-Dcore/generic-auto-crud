@@ -99,14 +99,21 @@
       <version>10.1.24</version>
     </dependency>
   </dependencies>
+<!--  <distributionManagement>-->
+<!--    <snapshotRepository>-->
+<!--      <id>510b0268-4d27-4e61-9488-6d7a41c11ed7</id>-->
+<!--      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>-->
+<!--    </snapshotRepository>-->
+<!--    <repository>-->
+<!--      <id>510b0268-4d27-4e61-9488-6d7a41c11ed7</id>-->
+<!--      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
+<!--    </repository>-->
+<!--  </distributionManagement>-->
   <distributionManagement>
-    <snapshotRepository>
-      <id>510b0268-4d27-4e61-9488-6d7a41c11ed7</id>
-      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
     <repository>
-      <id>510b0268-4d27-4e61-9488-6d7a41c11ed7</id>
-      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      <id>github</id>
+      <name>GitHub OWNER Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/ISYS-Dcore/generic-auto-crud</url>
     </repository>
   </distributionManagement>
   <build>
