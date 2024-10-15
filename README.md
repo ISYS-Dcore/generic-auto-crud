@@ -47,9 +47,9 @@ After create and configure your spring boot 3.x.x project, import our dependecy 
 ```
 <!--Domingos Masta - Java Spring boot Genetic Auto CRUD Library-->
 <dependency>
-  <groupId>io.github.isys-dcore</groupId>
-  <artifactId>generic-auto-crud</artifactId>
-  <version>0.0.5</version>
+    <groupId>io.github.isys-dcore</groupId>
+    <artifactId>generic-auto-crud</artifactId>
+    <version>0.0.6</version>
 </dependency>
 ```
 ### Step 2 :
