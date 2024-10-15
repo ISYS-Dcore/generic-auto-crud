@@ -24,9 +24,9 @@ Edit your pom.xml and add this dependency
 ```
 <!--Domingos Masta - Java Spring boot Genetic Auto CRUD Library-->
 <dependency>
-  <groupId>io.github.isys-dcore</groupId>
-  <artifactId>generic-auto-crud</artifactId>
-  <version>0.0.5</version>
+    <groupId>io.github.isys-dcore</groupId>
+    <artifactId>generic-auto-crud</artifactId>
+    <version>0.0.6</version>
 </dependency>
 ```
 
