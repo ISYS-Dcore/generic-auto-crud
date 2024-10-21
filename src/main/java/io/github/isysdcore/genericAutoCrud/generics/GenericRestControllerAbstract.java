@@ -81,7 +81,7 @@ public abstract class GenericRestControllerAbstract<T, S extends GenericRestServ
 
     @Override
     @GetMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
-    public ResponseEntity<EntityModel<T>> findById(@PathVariable K id) {
+    public ResponseEntity<EntityModel<T>> findById(@PathVariable(name = "id") K id) {
         try{
             T entity = serviceImpl.findById(id) //
                     .orElseThrow(() -> new ResourceNotFoundException(object.getClass().getSimpleName() + " with id " + id));
@@ -89,10 +89,6 @@ public abstract class GenericRestControllerAbstract<T, S extends GenericRestServ
         }catch (Exception e){
             throw e;
         }
-//        T entity = serviceImpl.findById(id) //
-//                    .orElseThrow(() -> new EntityNotFoundException(object.getClass().getName() , id));
-//        return ResponseEntity.ok(entity);
-//        return ResponseEntity.ok(assembler.toModel(entity));
     }
 
     @Override
@@ -107,12 +103,11 @@ public abstract class GenericRestControllerAbstract<T, S extends GenericRestServ
         }catch (Exception e){
             throw e;
         }
-//        return ResponseEntity.internalServerError().body(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro ao salvar a entidade", newEntity.toString()));
     }
 
     @Override
     @PutMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
-    public ResponseEntity<?> update(@PathVariable K id, @RequestBody T newEntity) {
+    public ResponseEntity<?> update(@PathVariable(name = "id") K id, @RequestBody T newEntity) {
 
         try{
             EntityModel<T> entityModel = assembler.toModel(serviceImpl.update(id, newEntity));
@@ -126,7 +121,7 @@ public abstract class GenericRestControllerAbstract<T, S extends GenericRestServ
 
     @Override
     @DeleteMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
-    public ResponseEntity<?> delete(@PathVariable K id) {
+    public ResponseEntity<?> delete(@PathVariable(name = "id") K id) {
         try{
             EntityModel<T> entityModel = assembler.toModel(serviceImpl.delete(id));
             return ResponseEntity //

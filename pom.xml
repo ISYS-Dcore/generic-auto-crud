@@ -4,7 +4,7 @@
 
   <groupId>io.github.isys-dcore</groupId>
   <artifactId>generic-auto-crud</artifactId>
-  <version>0.0.6</version>
+  <version>0.0.7</version>
 <!--  <packaging>jar</packaging>-->
 
   <name>generic-auto-crud</name>
@@ -159,7 +159,7 @@
         <extensions>true</extensions>
         <configuration>
           <autoPublish>true</autoPublish>
-          <deploymentName>v0.0.6</deploymentName>
+          <deploymentName>${project.version}</deploymentName>
           <publishingServerId>central</publishingServerId>
           <tokenAuth>true</tokenAuth>
         </configuration>
