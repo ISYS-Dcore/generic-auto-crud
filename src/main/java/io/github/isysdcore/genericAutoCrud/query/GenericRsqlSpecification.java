@@ -7,8 +7,21 @@ package io.github.isysdcore.genericAutoCrud.query;
 
 import io.github.isysdcore.genericAutoCrud.utils.DateUtils;
 import cz.jirutka.rsql.parser.ast.ComparisonOperator;
-import jakarta.persistence.criteria.*;
-import jakarta.persistence.metamodel.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.CollectionAttribute;
+import jakarta.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.MapAttribute;
+import jakarta.persistence.metamodel.PluralAttribute;
+import jakarta.persistence.metamodel.SetAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 import lombok.AllArgsConstructor;
 import org.hibernate.metamodel.mapping.ordering.ast.PluralAttributePath;
 import org.springframework.data.jpa.domain.Specification;
@@ -34,8 +47,8 @@ public class GenericRsqlSpecification<T> implements Specification<T> {
     //    @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query,
                                  CriteriaBuilder builder) {
-        Path<String> propertyExpression = parsePropertyOneLevel(root);
-//        Path<String> propertyExpression = parseProperty(root);
+//        Path<String> propertyExpression = parsePropertyOneLevel(root);
+        Path<String> propertyExpression = parseProperty(root);
         List<Object> args = castArguments(propertyExpression);
         Object argument = args.get(0);
         query.distinct(true);
@@ -121,39 +134,47 @@ public class GenericRsqlSpecification<T> implements Specification<T> {
 
     // This method will help us diving deep into nested property using the dot convention
     // The originial tutorial did not have this, so it can only parse the shallow properties.
-//    private Path<String> parseProperty(Root<T> root) {
-//        Path<String> path;
-//        if (property.contains(".")) {
-//            // Nested properties
-//            String[] pathSteps = property.split("\\.");
-//            String step = pathSteps[0];
-//            path = root.get(step);
-//            From lastFrom = root;
-//
-//            for (int i = 1; i <= pathSteps.length - 1; i++) {
-//                if (path instanceof PluralAttributePath) {
-//                    PluralAttribute attr = ((PluralAttributePath) path).get;
-//                    Join join = getJoin(attr, lastFrom);
-//                    path = join.get(pathSteps[i]);
-//                    lastFrom = join;
-//                } else if (path instanceof SingularAttributePath) {
-//                    SingularAttribute attr = ((SingularAttributePath) path).getAttribute();
-//                    if (attr.getPersistentAttributeType() != Attribute.PersistentAttributeType.BASIC) {
-//                        Join join = lastFrom.join(attr, JoinType.LEFT);
-//                        path = join.get(pathSteps[i]);
-//                        lastFrom = join;
-//                    } else {
-//                        path = path.get(pathSteps[i]);
-//                    }
-//                } else {
-//                    path = path.get(pathSteps[i]);
-//                }
-//            }
-//        } else {
-//            path = root.get(property);
-//        }
-//        return path;
-//    }
+    // New Version of dipper attribute in concern with hibernate 6
+    private Path<String> parseProperty(Root<T> root) {
+        Path<String> path;
+        if (property.contains(".")) {
+            // Handle nested properties
+            String[] pathSteps = property.split("\\.");
+            String step = pathSteps[0];
+            path = root.get(step);
+            From<?, ?> lastFrom = root;
+
+            for (int i = 1; i < pathSteps.length; i++) {
+                // Determine if the current path is a plural or singular attribute
+                if (path.getModel() instanceof PluralAttribute) {
+                    // Handle collection attributes
+                    PluralAttribute<?, ?, ?> attr = (PluralAttribute<?, ?, ?>) path.getModel();
+                    Join<?, ?> join = getJoin(attr, lastFrom);
+                    path = join.get(pathSteps[i]);
+                    lastFrom = join;
+                } else if (path.getModel() instanceof SingularAttribute) {
+                    // Handle singular attributes
+                    SingularAttribute attr = (SingularAttribute<?, ?>) path.getModel();
+                    if (attr.getPersistentAttributeType() != Attribute.PersistentAttributeType.BASIC) {
+                        // Join non-basic types
+                        Join<?, ?> join = lastFrom.join(attr, JoinType.LEFT);
+                        path = join.get(pathSteps[i]);
+                        lastFrom = join;
+                    } else {
+                        // Basic attribute, no join needed
+                        path = path.get(pathSteps[i]);
+                    }
+                } else {
+                    // Default path handling
+                    path = path.get(pathSteps[i]);
+                }
+            }
+        } else {
+            // Single property, no nesting
+            path = root.get(property);
+        }
+        return path;
+    }
 
     private Join getJoin(PluralAttribute attr, From from) {
         return switch (attr.getCollectionType()) {

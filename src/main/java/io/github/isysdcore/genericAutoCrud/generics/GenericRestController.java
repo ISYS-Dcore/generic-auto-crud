@@ -22,7 +22,6 @@ public interface GenericRestController<T, K> {
      *
      * @return All Object of type T
      */
-//    public CollectionModel<EntityModel<Object>> findAll();
     public Page<T> findAll(int page, int size, int sort);
 
     /**

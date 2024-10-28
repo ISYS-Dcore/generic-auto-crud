@@ -29,7 +29,7 @@ import java.util.logging.Logger;
  * @param <K> The Class type that represent the id field datatype of entity of type T
  * @param <R> The generic Repository modified by entity and id datatype injected
  */
-public abstract class GenericRestServiceAbstract<T, R extends GenericRepository<T,K>, K>
+public abstract class GenericRestServiceAbstract<T extends GenericEntity<K>, R extends GenericRepository<T,K>, K>
         implements GenericRestService<T, K> {
 
     @Autowired
@@ -38,11 +38,9 @@ public abstract class GenericRestServiceAbstract<T, R extends GenericRepository<
     @Override
     public T save(T newEntity) {
        try{
-           Field fdCreatedAt = newEntity.getClass().getSuperclass().getDeclaredField("cratedAt");
-           fdCreatedAt.setAccessible(true);
-           fdCreatedAt.set(newEntity, Calendar.getInstance().getTime());
+           newEntity.setCratedAt(Calendar.getInstance().getTime());
            return repository.save(newEntity);
-        } catch (NoSuchFieldException | IllegalAccessException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
             ex.printStackTrace();
         }
@@ -82,7 +80,7 @@ public abstract class GenericRestServiceAbstract<T, R extends GenericRepository<
         return repository.findById(id) //
                 .map(oldEntity -> {
                     try {
-                        List<Field> fieldList = Arrays.asList(oldEntity.getClass().getFields());
+                        List<Field> fieldList = Arrays.asList(oldEntity.getClass().getDeclaredFields());
                         fieldList.forEach(oldField -> {
                             oldField.setAccessible(true);
                             try {
@@ -96,14 +94,9 @@ public abstract class GenericRestServiceAbstract<T, R extends GenericRepository<
                                 Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, e);
                             }
                         });
-                        Field fdUpdatedAt = newEntity.getClass().getSuperclass().getDeclaredField("updatedAt");
-                        fdUpdatedAt.setAccessible(true);
-                        fdUpdatedAt.set(newEntity, Calendar.getInstance().getTime());
-                        Field idUpdatedAt = newEntity.getClass().getSuperclass().getDeclaredField("id");
-                        idUpdatedAt.setAccessible(true);
-                        idUpdatedAt.set(newEntity, id);
-                    } catch (SecurityException | IllegalArgumentException | NoSuchFieldException |
-                             IllegalAccessException ex) {
+                        newEntity.setUpdatedAt(Calendar.getInstance().getTime());
+                        newEntity.setId(id);
+                    } catch (SecurityException | IllegalArgumentException ex) {
                         Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     return repository.save(newEntity);
@@ -116,16 +109,9 @@ public abstract class GenericRestServiceAbstract<T, R extends GenericRepository<
         return repository.findById(id) //
                 .map(oldEntity -> {
                     try {
-
-                        Field fdDeletedAt = oldEntity.getClass().getSuperclass().getDeclaredField("deletedAt");
-                        fdDeletedAt.setAccessible(true);
-                        fdDeletedAt.set(oldEntity, Calendar.getInstance().getTime());
-
-                        Field fdIsDeleted = oldEntity.getClass().getSuperclass().getDeclaredField("deleted");
-                        fdIsDeleted.setAccessible(true);
-                        fdIsDeleted.set(oldEntity, Boolean.TRUE);
-
-                    } catch (NoSuchFieldException | IllegalAccessException ex) {
+                        oldEntity.setDeletedAt(Calendar.getInstance().getTime());
+                        oldEntity.setDeleted(Boolean.TRUE);
+                    } catch (Exception ex) {
                         Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     return repository.save(oldEntity);
