@@ -8,11 +8,13 @@ package io.github.isysdcore.genericAutoCrud.query;
 import cz.jirutka.rsql.parser.ast.ComparisonOperator;
 import cz.jirutka.rsql.parser.ast.RSQLOperators;
 
+import java.util.Arrays;
+
 /**
  *
  * @author domingos.fernando
  */
-public enum RsqlSearchOperation
+public enum QuerySearchOperation
 {
     EQUAL(RSQLOperators.EQUAL),
     NOT_EQUAL(RSQLOperators.NOT_EQUAL),
@@ -21,23 +23,20 @@ public enum RsqlSearchOperation
     LESS_THAN(RSQLOperators.LESS_THAN),
     LESS_THAN_OR_EQUAL(RSQLOperators.LESS_THAN_OR_EQUAL),
     IN(RSQLOperators.IN),
-    NOT_IN(RSQLOperators.NOT_IN);
+    NOT_IN(RSQLOperators.NOT_IN),
+    REGEX(new ComparisonOperator("=re=", false)),
+    EXISTS(new ComparisonOperator("=ex=", false));
 
     private ComparisonOperator operator;
 
-    private RsqlSearchOperation(ComparisonOperator operator)
+    private QuerySearchOperation(ComparisonOperator operator)
     {
         this.operator = operator;
     }
 
-    public static RsqlSearchOperation getSimpleOperator(ComparisonOperator operator)
+    public static QuerySearchOperation getSimpleOperator(ComparisonOperator operator)
     {
-        for (RsqlSearchOperation operation : values()) {
-            if (operation.getOperator() == operator) {
-                return operation;
-            }
-        }
-        return null;
+        return Arrays.stream(values()).filter(value -> value.operator.equals(operator)).findFirst().orElse(null);
     }
 
     public ComparisonOperator getOperator()

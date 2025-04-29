@@ -3,9 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.github.isysdcore.genericAutoCrud.generics;
+package io.github.isysdcore.genericAutoCrud.generics.sql;
 
 
+import io.github.isysdcore.genericAutoCrud.generics.GenericEntity;
+import io.github.isysdcore.genericAutoCrud.generics.GenericModelAssembler;
+import io.github.isysdcore.genericAutoCrud.generics.GenericRestController;
 import io.github.isysdcore.genericAutoCrud.utils.Constants;
 import io.github.isysdcore.genericAutoCrud.utils.DefaultSearchParameters;
 import lombok.Getter;
@@ -84,7 +87,7 @@ public abstract class GenericRestControllerAbstract<T extends GenericEntity<K>, 
     public ResponseEntity<EntityModel<T>> findById(@PathVariable(name = "id") K id) {
         try{
             T entity = serviceImpl.findById(id) //
-                    .orElseThrow(() -> new ResourceNotFoundException(object.getClass().getSimpleName() + " with id " + id));
+                    .orElseThrow(() -> new ResourceNotFoundException("Was not able to find Entity with id " + id));
             return ResponseEntity.ok(assembler.toModel(entity));
         }catch (Exception e){
             throw e;

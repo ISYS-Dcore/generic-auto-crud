@@ -17,7 +17,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.UUID;
 
 /**
  *
@@ -32,8 +31,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @MappedSuperclass
-@JsonIgnoreProperties(value = {"deleted", "deletedAt", "updatedAt", "cratedAt"}, allowSetters = true)
-public class GenericEntity<K> implements Serializable {
+@JsonIgnoreProperties(value = {"deleted", "deletedAt", "updatedAt", "cratedAt", "updatedBy", "deletedBy"}, allowSetters = true)
+public abstract class GenericEntity<K> implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     @Id
@@ -43,11 +42,13 @@ public class GenericEntity<K> implements Serializable {
     @CreationTimestamp
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date cratedAt;
+    private Date createdAt;
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
     private Date deletedAt;
     private Boolean deleted = false;
-    private UUID updatedBy;
+    private K updatedBy;
+    private K deletedBy;
+
 }

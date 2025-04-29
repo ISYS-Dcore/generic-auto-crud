@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.github.isysdcore.genericAutoCrud.query;
+package io.github.isysdcore.genericAutoCrud.query.sql;
 
 import cz.jirutka.rsql.parser.ast.AndNode;
 import cz.jirutka.rsql.parser.ast.ComparisonNode;
@@ -14,7 +14,7 @@ import org.springframework.data.jpa.domain.Specification;
 /**
  *
  * @author domingos.fernando
- * @param <T>
+ * @param <T> The Entity class that represent the database entity
  */
 public class CustomRsqlVisitor<T> implements RSQLVisitor<Specification<T>, Void> {
 

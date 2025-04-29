@@ -1,4 +1,4 @@
-package com.isysdcore.medsys360;
+package io.github.isysdcore.genericAutoCrud;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

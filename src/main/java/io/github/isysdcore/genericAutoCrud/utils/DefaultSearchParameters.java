@@ -20,9 +20,9 @@ import org.springframework.data.domain.Sort;
 @NoArgsConstructor
 public class DefaultSearchParameters {
 
-    private int page = 0;
-    private int size = 10;
-    private int sort = 1;
+    private int page = Constants.PAGE_INDEX;
+    private int size = Constants.PAGE_SIZE;
+    private int sort = Constants.PAGE_SORT;
     private String query = "id==*";
 
     /**

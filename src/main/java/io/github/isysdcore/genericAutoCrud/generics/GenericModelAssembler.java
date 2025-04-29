@@ -22,7 +22,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 /**
  *
  * @author domingos.fernando
- * @param <T>
+ * @param <T> The Entity class that represent the database entity
  */
 public class GenericModelAssembler<T> implements RepresentationModelAssembler<T, EntityModel<T>> {
 

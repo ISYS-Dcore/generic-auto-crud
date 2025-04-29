@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.github.isysdcore.genericAutoCrud.query;
+package io.github.isysdcore.genericAutoCrud.query.sql;
 
+import io.github.isysdcore.genericAutoCrud.query.QuerySearchOperation;
 import io.github.isysdcore.genericAutoCrud.utils.DateUtils;
 import cz.jirutka.rsql.parser.ast.ComparisonOperator;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -23,6 +24,7 @@ import jakarta.persistence.metamodel.PluralAttribute;
 import jakarta.persistence.metamodel.SetAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.metamodel.mapping.ordering.ast.PluralAttributePath;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -38,7 +40,8 @@ import java.util.stream.Collectors;
  * @param <T>
  */
 @AllArgsConstructor
-public class GenericRsqlSpecification<T> implements Specification<T> {
+@Slf4j
+public class GenericRsqlSpec<T> implements Specification<T> {
 
     private final String property;
     private final ComparisonOperator operator;
@@ -47,15 +50,14 @@ public class GenericRsqlSpecification<T> implements Specification<T> {
     //    @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query,
                                  CriteriaBuilder builder) {
-//        Path<String> propertyExpression = parsePropertyOneLevel(root);
         Path<String> propertyExpression = parseProperty(root);
         List<Object> args = castArguments(propertyExpression);
         Object argument = args.get(0);
         query.distinct(true);
 
-        switch (Objects.requireNonNull(RsqlSearchOperation.getSimpleOperator(operator))) {
+        switch (Objects.requireNonNull(QuerySearchOperation.getSimpleOperator(operator))) {
             case EQUAL -> {
-                if (propertyExpression instanceof PluralAttributePath && argument.equals("empty")) {
+                if (propertyExpression.getModel() instanceof PluralAttribute && argument.equals("empty")) {
                     return builder.isEmpty(root.get(property));
                 } else if (argument == null || argument.equals("null")) {
                     return builder.isNull(propertyExpression);
@@ -114,22 +116,6 @@ public class GenericRsqlSpecification<T> implements Specification<T> {
             }
         }
         return null;
-    }
-
-    private Path<String> parsePropertyOneLevel(Root<T> root) {
-        Path<String> path;
-        if (property.contains(".")) {
-            // Nested properties
-            String[] pathSteps = property.split("\\.");
-            String step = pathSteps[0];
-            path = root.get(step);
-            for (int i = 1; i <= pathSteps.length - 1; i++) {
-                path = path.get(pathSteps[i]);
-            }
-        } else {
-            path = root.get(property);
-        }
-        return path;
     }
 
     // This method will help us diving deep into nested property using the dot convention
@@ -205,9 +191,48 @@ public class GenericRsqlSpecification<T> implements Specification<T> {
                 return Short.valueOf(arg);
             }else if (type.equals(UUID.class)) {
                 return UUID.fromString(arg);
-            } else {
+            } else if (type.equals(Object.class)) {
+                return getClassTypeFromValue(arg);
+            }else {
                 return arg;
             }
         }).collect(Collectors.toList());
+    }
+
+    private Object getClassTypeFromValue(String arg){
+        if( arg.matches("\\d+(\\.\\d+)?")){
+            // Check if it is an Integer
+            try {
+                return Integer.parseInt(arg);
+            } catch (NumberFormatException e) {
+                // Not an Integer
+                log.info("Object value is not parsable to Integer: {}", arg);
+            }
+            try {
+                return Long.parseLong(arg);
+            } catch (NumberFormatException e) {
+                // Not a Long
+                log.info("Object value is not parsable to Long: {}", arg);
+            }
+            // Check if it is a Double
+            try {
+                return Double.parseDouble(arg);
+            } catch (NumberFormatException e) {
+                // Not a Double
+                log.info("Object value is not parsable to Double: {}", arg);
+            }
+        }else if (arg.equalsIgnoreCase("true") || arg.equalsIgnoreCase("false")) {
+            return Boolean.valueOf(arg);
+        } else {
+            // Check if it is a UUID
+            try {
+                return UUID.fromString(arg);
+            } catch (IllegalArgumentException e) {
+                // Not a UUID
+                log.info("Object value is not parsable to UUID: {}", arg);
+            }
+        }
+        // Default: String
+        return arg;
     }
 }

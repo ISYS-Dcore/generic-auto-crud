@@ -3,12 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.github.isysdcore.genericAutoCrud.query;
+package io.github.isysdcore.genericAutoCrud.query.sql;
 
-import cz.jirutka.rsql.parser.ast.ComparisonNode;
-import cz.jirutka.rsql.parser.ast.LogicalNode;
-import cz.jirutka.rsql.parser.ast.LogicalOperator;
-import cz.jirutka.rsql.parser.ast.Node;
+import cz.jirutka.rsql.parser.ast.*;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
@@ -60,7 +57,7 @@ public class GenericRsqlSpecBuilder<T>
     public Specification<T> createSpecification(ComparisonNode comparisonNode)
     {
         Specification<T> result = Specification.where(
-                new GenericRsqlSpecification<T>(
+                new GenericRsqlSpec<T>(
                         comparisonNode.getSelector(),
                         comparisonNode.getOperator(),
                         comparisonNode.getArguments()
@@ -68,4 +65,5 @@ public class GenericRsqlSpecBuilder<T>
         );
         return result;
     }
+
 }

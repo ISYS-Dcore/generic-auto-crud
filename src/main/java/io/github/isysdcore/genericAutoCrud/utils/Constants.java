@@ -21,4 +21,8 @@ public class Constants {
     public static final String SIZE = "size";
     public static final String SORT = "sort";
     public static final String QUERY = "query";
+
+    public static final Integer PAGE_INDEX = 0;
+    public static final Integer PAGE_SIZE = 10;
+    public static final Integer PAGE_SORT = 1;
 }
