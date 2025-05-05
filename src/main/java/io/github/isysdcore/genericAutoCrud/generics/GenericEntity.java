@@ -31,7 +31,7 @@ import java.util.Date;
 @Getter
 @Setter
 @MappedSuperclass
-@JsonIgnoreProperties(value = {"deleted", "deletedAt", "updatedAt", "cratedAt", "updatedBy", "deletedBy"}, allowSetters = true)
+@JsonIgnoreProperties(value = {"deleted", "deletedAt", "updatedAt", "createdAt", "updatedBy", "deletedBy"}, allowSetters = true)
 public abstract class GenericEntity<K> implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;

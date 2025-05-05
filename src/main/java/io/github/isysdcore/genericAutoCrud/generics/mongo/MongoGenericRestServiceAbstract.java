@@ -3,17 +3,26 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.github.isysdcore.genericAutoCrud.generics.sql;
+package io.github.isysdcore.genericAutoCrud.generics.mongo;
 
-import io.github.isysdcore.genericAutoCrud.ex.ResourceNotFoundException;
-import io.github.isysdcore.genericAutoCrud.generics.GenericEntity;
-import io.github.isysdcore.genericAutoCrud.query.sql.CustomRsqlVisitor;
-import io.github.isysdcore.genericAutoCrud.utils.DefaultSearchParameters;
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.Node;
+import io.github.isysdcore.genericAutoCrud.ex.ResourceNotFoundException;
+import io.github.isysdcore.genericAutoCrud.generics.GenericEntity;
+import io.github.isysdcore.genericAutoCrud.generics.sql.GenericRestServiceAbstract;
+import io.github.isysdcore.genericAutoCrud.query.mongo.MongoPropertyResolver;
+import io.github.isysdcore.genericAutoCrud.query.mongo.MongoRsqlVisitor;
+import io.github.isysdcore.genericAutoCrud.query.sql.CustomRsqlVisitor;
+import io.github.isysdcore.genericAutoCrud.utils.DefaultSearchParameters;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -22,18 +31,26 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  *
  * @author domingos.fernando
  * @param <T> The Entity class that represent the database entity
- * @param <K> The Class type that represent the id field datatype of entity of type T
  * @param <R> The generic Repository modified by entity and id datatype injected
+ * @param <K> The Class type that represent the id field datatype of entity of type T
  */
-public abstract class GenericRestServiceAbstract<T extends GenericEntity<K>, R extends GenericRepository<T,K>, K>{
+@RequiredArgsConstructor
+public abstract class MongoGenericRestServiceAbstract<T extends GenericEntity<K>, R extends MongoGenericRepository<T,K>, K>{
 
     @Autowired
     public R repository;
+    @Autowired
+    private MongoTemplate mongoTemplate;
+    private final Class<T> entityClass;
+    @Autowired
+    private MongoPropertyResolver mongoPropertyResolver;
+
     /**
      *
      * @param newEntity The new entity registry of type T to store in database
@@ -66,10 +83,7 @@ public abstract class GenericRestServiceAbstract<T extends GenericEntity<K>, R e
      * @return Pageable object of type T
      */
     public Page<T> findAll(int page, int size, int sort) {
-        String defaultQuery = "deleted==false";
-        Node rootNode = new RSQLParser().parse(defaultQuery);
-        Specification<T> spec = rootNode.accept(new CustomRsqlVisitor<>());
-        return repository.findAll(spec, DefaultSearchParameters.preparePages(page, size, sort));
+        return repository.findAll(DefaultSearchParameters.preparePages(page, size, sort));
     }
     /**
      *
@@ -82,8 +96,14 @@ public abstract class GenericRestServiceAbstract<T extends GenericEntity<K>, R e
     public Page<T> findAll(String query, int page, int size, int sort) {
         String defaultQuery = "deleted==false;(" + query + ")";
         Node rootNode = new RSQLParser().parse(defaultQuery);
-        Specification<T> spec = rootNode.accept(new CustomRsqlVisitor<>());
-        return repository.findAll(spec, DefaultSearchParameters.preparePages(page, size, sort));
+        Criteria criteria = rootNode.accept(new MongoRsqlVisitor<>(entityClass, mongoPropertyResolver));
+        Pageable pageable = DefaultSearchParameters.preparePages(page, size, sort);
+        Query finalQuery = new Query(criteria)
+                .skip(pageable.getOffset())
+                .limit(pageable.getPageSize());
+        List<T> content = mongoTemplate.find(finalQuery, entityClass);
+        long total = mongoTemplate.count(new Query(criteria),entityClass);
+        return new PageImpl<>(content, pageable, total);
     }
     /**
      *
@@ -93,8 +113,8 @@ public abstract class GenericRestServiceAbstract<T extends GenericEntity<K>, R e
     public long count(String condToCount) {
         condToCount = "deleted==FALSE;(" + condToCount + ")";
         Node rootNode = new RSQLParser().parse(condToCount);
-        Specification<T> spec = rootNode.accept(new CustomRsqlVisitor<>());
-        return repository.count(spec);
+        Criteria criteria = rootNode.accept(new MongoRsqlVisitor<>(entityClass, mongoPropertyResolver));
+        return mongoTemplate.count(new Query(criteria),entityClass);
     }
     /**
      *

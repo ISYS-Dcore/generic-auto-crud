@@ -6,6 +6,9 @@
 package io.github.isysdcore.genericAutoCrud.utils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
@@ -17,6 +20,8 @@ import java.util.List;
  *
  * @author domingos.fernando
  */
+@Getter
+@Setter
 public class ApiError
 {
 
@@ -27,6 +32,7 @@ public class ApiError
     private String details;
     private String ex;
     private List<String> errors;
+    @JsonIgnore
     private ArrayList<Object> objects;
 
     public ApiError()
@@ -92,76 +98,6 @@ public class ApiError
         this.ex = ex;
         processDetails(ex);
         errors = Arrays.asList(error);
-    }
-
-    public HttpStatus getStatus()
-    {
-        return status;
-    }
-
-    public void setStatus(HttpStatus status)
-    {
-        this.status = status;
-    }
-
-    public String getDetails()
-    {
-        return details;
-    }
-
-    public void setDetails(String details)
-    {
-        this.details = details;
-    }
-
-    public String getMessage()
-    {
-        return message;
-    }
-
-    public void setMessage(String message)
-    {
-        this.message = message;
-    }
-
-    public List<String> getErrors()
-    {
-        return errors;
-    }
-
-    public void setErrors(List<String> errors)
-    {
-        this.errors = errors;
-    }
-
-    public String getEx()
-    {
-        return ex;
-    }
-
-    public void setEx(String ex)
-    {
-        this.ex = ex;
-    }
-
-    public LocalDateTime getTimestamp()
-    {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp)
-    {
-        this.timestamp = timestamp;
-    }
-
-    public List<Object> getObjects()
-    {
-        return objects;
-    }
-
-    public void setObjects(ArrayList<Object> objects)
-    {
-        this.objects = objects;
     }
 
     private void processDetails(String content)

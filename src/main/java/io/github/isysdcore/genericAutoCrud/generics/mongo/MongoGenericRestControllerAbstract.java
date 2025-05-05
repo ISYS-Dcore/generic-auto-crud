@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.github.isysdcore.genericAutoCrud.generics.sql;
+package io.github.isysdcore.genericAutoCrud.generics.mongo;
 
 
 import io.github.isysdcore.genericAutoCrud.ex.ResourceNotFoundException;
@@ -21,18 +21,12 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  *
- * @param <T> The Entity class that represent the database entity
- * @param <K> The Class type that represent the id field datatype of entity of type T
- */
-
-/**
- *
  * @author domingos.fernando
  * @param <T> The Entity class that represent the database entity
  * @param <S> The service Implementation that already modified by entity injection
  * @param <K> The Class type that represent the id field datatype of entity of type T
  */
-public abstract class GenericRestControllerAbstract<T extends GenericEntity<K>, S extends GenericRestServiceAbstract<T,?,K>, K> implements GenericRestController<T, K> {
+public abstract class MongoGenericRestControllerAbstract<T extends GenericEntity<K>, S extends MongoGenericRestServiceAbstract<T,?,K>, K> implements GenericRestController<T, K> {
 
     @Getter
     private final String RESOIRCE_NAME = "";
@@ -41,12 +35,12 @@ public abstract class GenericRestControllerAbstract<T extends GenericEntity<K>, 
     private final S serviceImpl;
     private T object;
 
-    public GenericRestControllerAbstract(S serviceImpl) {
+    public MongoGenericRestControllerAbstract(S serviceImpl) {
         this.assembler = new GenericModelAssembler<>( this);
         this.serviceImpl = serviceImpl;
     }
 
-    public GenericRestControllerAbstract(S serviceImpl, T entity) {
+    public MongoGenericRestControllerAbstract(S serviceImpl, T entity) {
         this.assembler = new GenericModelAssembler<>( this);
         this.serviceImpl = serviceImpl;
         this.object = entity;

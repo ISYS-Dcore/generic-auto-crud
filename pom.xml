@@ -4,13 +4,14 @@
 
   <groupId>io.github.isys-dcore</groupId>
   <artifactId>generic-auto-crud</artifactId>
-  <version>0.0.16</version>
+  <version>0.2.73</version>
 <!--  <packaging>jar</packaging>-->
 
   <name>generic-auto-crud</name>
   <url>https://github.com/ISYS-Dcore/generic-auto-crud</url>
   <description>
-    This project is a library for speedup spring boot api crud development  in Java.
+    This project is a library for speedup spring boot api crud development with Java.
+    This project is a library for speedup spring boot api crud development with Java.
     USE THIS IN PRODUCTION BY YOUR OWN RISK. IT WAS CREATED FOR PERSONAL PROJECTS BUT WORKS WELL.
   </description>
 
@@ -65,11 +66,6 @@
       <type>jar</type>
     </dependency>
     <dependency>
-      <groupId>org.springframework.data</groupId>
-      <artifactId>spring-data-rest-webmvc</artifactId>
-      <version>4.3.2</version>
-    </dependency>
-    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>1.18.30</version>
@@ -108,6 +104,22 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-csv</artifactId>
       <version>1.10.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.hateoas</groupId>
+      <artifactId>spring-hateoas</artifactId>
+      <version>2.4.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>2.18.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-test</artifactId>
+      <version>3.4.4</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
