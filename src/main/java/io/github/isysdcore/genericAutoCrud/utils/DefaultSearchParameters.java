@@ -34,8 +34,8 @@ public class DefaultSearchParameters {
      */
     public static Pageable preparePages(int actualPage, int actualSize, int actualSort) {
 
-        return actualSort > 0 ? PageRequest.of(actualPage, actualSize, Sort.by("cratedAt").ascending())
-                : PageRequest.of(actualPage, actualSize, Sort.by("cratedAt").descending());
+        return actualSort > 0 ? PageRequest.of(actualPage, actualSize, Sort.by("createdAt").ascending())
+                : PageRequest.of(actualPage, actualSize, Sort.by("createdAt").descending());
     }
 
 }

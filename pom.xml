@@ -4,7 +4,7 @@
 
   <groupId>io.github.isys-dcore</groupId>
   <artifactId>generic-auto-crud</artifactId>
-  <version>0.2.73</version>
+  <version>0.2.74</version>
 <!--  <packaging>jar</packaging>-->
 
   <name>generic-auto-crud</name>
