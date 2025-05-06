@@ -51,7 +51,7 @@ After create and configure your spring boot 3.x.x project, import our dependecy 
 <dependency>
     <groupId>io.github.isys-dcore</groupId>
     <artifactId>generic-auto-crud</artifactId>
-    <version>0.2.73</version>
+    <version>0.2.74</version>
 </dependency>
 ```
 ### Step 2 :
