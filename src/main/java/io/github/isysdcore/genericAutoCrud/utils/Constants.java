@@ -5,13 +5,15 @@
  */
 package io.github.isysdcore.genericAutoCrud.utils;
 
-/**
- *
- * @author domingos.fernando
- */
+/// Constants class that holds various constants used throughout the application.
+/// This class is designed to provide a centralized location for commonly used
+/// constants, such as API endpoint paths and default pagination parameters.
+/// @author domingos.fernando
 public class Constants {
     
     /**
+     * Constants for the API endpoints
+     * These constants define the base path for the API and the endpoints for
      * General search and list url
      * parameters
      * */

@@ -9,14 +9,21 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-/**
- * @author domingos.fernando
- */
+/// @author domingos.fernando
+/// This class is responsible for resolving the type of a property in a MongoDB entity
+/// given the entity class and the property path. It uses the MongoMappingContext
 @Component
 @RequiredArgsConstructor
 public class MongoPropertyResolver {
 
     private final MongoMappingContext mappingContext;
+
+    /*
+     * Resolves the type of property in a MongoDB entity given the entity class and the property path.
+     * @param entityClass   The class of the entity.
+     * @param propertyPath  The path to the property, e.g., "address.street".
+     * @return An Optional containing the Class type of the
+     */
 
     public Optional<Class<?>> resolvePropertyType(Class<?> entityClass, String propertyPath) {
         MongoPersistentEntity<?> entity = mappingContext.getPersistentEntity(entityClass);

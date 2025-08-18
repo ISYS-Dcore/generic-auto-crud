@@ -34,11 +34,9 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-/**
- *
- * @author domingos.fernando
- * @param <T>
- */
+/// @author domingos.fernando
+/// @param <T> Entity type that this specification will be applied to
+/// This class implements a generic RSQL specification for JPA queries.
 @AllArgsConstructor
 @Slf4j
 public class GenericRsqlSpec<T> implements Specification<T> {

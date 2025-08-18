@@ -36,10 +36,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- *
- * @author domingos.fernando
- */
+/// CustomRestExceptionHandler is a class that handles exceptions thrown by
+/// Spring MVC controllers.
+/// It extends ResponseEntityExceptionHandler to provide custom error responses
+/// @author domingos.fernando
 @Slf4j
 public abstract class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 

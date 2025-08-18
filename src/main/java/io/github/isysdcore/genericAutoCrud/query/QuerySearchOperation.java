@@ -10,10 +10,10 @@ import cz.jirutka.rsql.parser.ast.RSQLOperators;
 
 import java.util.Arrays;
 
-/**
- *
- * @author domingos.fernando
- */
+/// @author domingos.fernando
+/// This enum defines various search operations that can be used in queries.
+/// Each operation is associated with a specific ComparisonOperator that defines how the operation should be executed.
+/// The operations include equality checks, range checks, membership checks, and regular expression matching.
 public enum QuerySearchOperation
 {
     EQUAL(RSQLOperators.EQUAL),

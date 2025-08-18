@@ -33,13 +33,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-/**
- *
- * @author domingos.fernando
- * @param <T> The Entity class that represent the database entity
- * @param <R> The generic Repository modified by entity and id datatype injected
- * @param <K> The Class type that represent the id field datatype of entity of type T
- */
+/// @author domingos.fernando
+/// @param <T> The Entity class that represent the database entity
+/// @param <R> The generic Repository modified by entity and id datatype injected
+/// @param <K> The Class type that represent the id field datatype of entity of type T
 @RequiredArgsConstructor
 public abstract class MongoGenericRestServiceAbstract<T extends GenericEntity<K>, R extends MongoGenericRepository<T,K>, K>{
 

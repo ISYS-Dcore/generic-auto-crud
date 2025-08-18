@@ -19,11 +19,11 @@ import java.util.logging.Logger;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-/**
- *
- * @author domingos.fernando
- * @param <T> The Entity class that represent the database entity
- */
+/// This class is a generic model assembler that converts an entity of type T
+/// into an EntityModel<T>. It uses reflection to get the ID of the entity and
+/// creates links for self and collection retrieval.
+/// @author domingos.fernando
+/// @param <T> The Entity class that represent the database entity
 public class GenericModelAssembler<T> implements RepresentationModelAssembler<T, EntityModel<T>> {
 
     GenericRestController<T, ?> controllerClass;

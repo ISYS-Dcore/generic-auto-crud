@@ -19,13 +19,11 @@ import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-/**
- *
- * @author domingos.fernando
- * @param <T> The Entity class that represent the database entity
- * @param <S> The service Implementation that already modified by entity injection
- * @param <K> The Class type that represent the id field datatype of entity of type T
- */
+/// MongoGenericRestControllerAbstract is an abstract class that provides a
+/// @author domingos.fernando
+/// @param <T> The Entity class that represent the database entity
+/// @param <S> The service Implementation that already modified by entity injection
+/// @param <K> The Class type that represent the id field datatype of entity of type T
 public abstract class MongoGenericRestControllerAbstract<T extends GenericEntity<K>, S extends MongoGenericRestServiceAbstract<T,?,K>, K> implements GenericRestController<T, K> {
 
     @Getter

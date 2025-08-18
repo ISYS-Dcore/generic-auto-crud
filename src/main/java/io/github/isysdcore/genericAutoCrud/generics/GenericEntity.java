@@ -18,16 +18,13 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
-/**
- *
-
- */
-
-/**
- * @author domingos.fernando
- * @param <K> The Datatype for field ID, must be Long for numerical Ids or UUID for uuid ids,
- *          its will be mapped as Primary key in the database table.
- */
+/// GenericEntity is an abstract class that represents a generic entity
+/// in the database. It contains common fields such as id, createdAt,
+/// updatedAt, deletedAt, deleted, updatedBy, and deletedBy.
+/// This class is intended to be extended by other entity classes
+/// @author domingos.fernando
+/// @param <K> The Datatype for field ID, must be Long for numerical Ids or UUID for uuid ids,
+///          its will be mapped as Primary key in the database table.
 @Getter
 @Setter
 @MappedSuperclass

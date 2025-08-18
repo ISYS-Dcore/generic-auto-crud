@@ -16,10 +16,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- *
- * @author domingos.fernando
- */
+/// ApiError is a class that represents an error response in the API.
+/// It contains information about the error status, timestamp, message, details,
+/// exception, and a list of errors.
+/// This class is used to standardize error responses across the API.
+/// @author domingos.fernando
 @Getter
 @Setter
 public class ApiError
@@ -102,13 +103,6 @@ public class ApiError
 
     private void processDetails(String content)
     {
-//        Pattern p = Pattern.compile("Detail:(.*?)\\,");
-//        Matcher m = p.matcher(content);
-//        this.details = "";
-//        if (m.find()) {
-//            this.details += m.group(1).trim();
-//        }
-        this.details = "";
         this.details = content.substring(content.indexOf("Detail:") + 7, content.length());
     }
 

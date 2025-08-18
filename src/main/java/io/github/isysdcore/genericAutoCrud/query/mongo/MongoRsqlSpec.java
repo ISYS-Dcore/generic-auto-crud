@@ -8,9 +8,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-/**
- * @author domingos.fernando
- */
+/// @author domingos.fernando
+/// @param <T> The Entity class that represents the MongoDB entity
+/// This class is responsible for converting RSQL specifications into MongoDB Criteria.
+/// It handles various comparison operators and argument types, converting them into appropriate MongoDB queries.
 public class MongoRsqlSpec<T> {
 
     private final String property;
@@ -19,6 +20,15 @@ public class MongoRsqlSpec<T> {
     private final Class<T> entityClass;
     private final MongoPropertyResolver resolver;
 
+    /**
+     * Constructs a MongoRsqlSpec with the specified property, operator, arguments, entity class, and property resolver.
+     *
+     * @param property  The property to filter on.
+     * @param operator  The comparison operator to use.
+     * @param arguments The list of arguments for the comparison.
+     * @param entityClass The class of the entity being queried.
+     * @param resolver  The resolver to determine the type of the property.
+     */
     public MongoRsqlSpec(String property, ComparisonOperator operator, List<String> arguments,
                          Class<T> entityClass, MongoPropertyResolver resolver) {
         this.property = property;
@@ -28,6 +38,11 @@ public class MongoRsqlSpec<T> {
         this.resolver = resolver;
     }
 
+    /**
+     * Converts the RSQL specification into a MongoDB Criteria object.
+     *
+     * @return A Criteria object that can be used in MongoDB queries.
+     */
     public Criteria toCriteria() {
         List<Object> args = castArguments();
         Object arg = args.isEmpty() ? null : args.get(0);
@@ -79,16 +94,23 @@ public class MongoRsqlSpec<T> {
             }
         }
     }
-
-//    private List<Object> castArguments() {
-//        return arguments.stream().map(this::parseValue).collect(Collectors.toList());
-//    }
-
+    /**
+     * Converts the arguments to the appropriate types based on the property type.
+     *
+     * @return A list of arguments cast to their appropriate types.
+     */
     private List<Object> castArguments() {
         Class<?> targetType = resolver.resolvePropertyType(entityClass, property).orElse(String.class);
         return arguments.stream().map(arg -> convert(arg, targetType)).toList();
     }
 
+    /**
+     * Converts a string argument to the specified type.
+     *
+     * @param arg  The string argument to convert.
+     * @param type The target type to convert to.
+     * @return The converted object, or the original string if conversion fails.
+     */
     private Object convert(String arg, Class<?> type) {
         try {
             if (type.equals(Integer.class)) return Integer.valueOf(arg);
@@ -103,6 +125,12 @@ public class MongoRsqlSpec<T> {
         }
     }
 
+    /**
+     * Parses a string argument to its appropriate type.
+     *
+     * @param arg The string argument to parse.
+     * @return The parsed object, or the original string if parsing fails.
+     */
     private Object parseValue(String arg) {
         try {
             if (arg.matches("\\d+")) return Integer.valueOf(arg);

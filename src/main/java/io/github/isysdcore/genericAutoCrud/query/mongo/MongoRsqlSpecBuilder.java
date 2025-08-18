@@ -10,9 +10,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-/**
- * @author domingos.fernando
- */
+/// @author domingos.fernando
+/// @param <T> The Entity class that represents the MongoDB entity
+/// This class is responsible for building MongoDB Criteria from RSQL query nodes.
+/// It handles logical operations (AND, OR) and comparison operations, converting them into appropriate Mongo
 public class MongoRsqlSpecBuilder<T> {
 
     private final Class<T> entityClass;
@@ -23,6 +24,12 @@ public class MongoRsqlSpecBuilder<T> {
         this.resolver = resolver;
     }
 
+        /**
+         * Creates a Criteria from an RSQL query represented by a Node.
+         *
+         * @param node The RSQL query node
+         * @return A Criteria that can be used in MongoDB queries, or an empty Criteria if the node is not recognized.
+         */
         public Criteria createCriteria(Node node) {
             if (node instanceof LogicalNode) {
                 return createCriteria((LogicalNode) node);
@@ -33,6 +40,12 @@ public class MongoRsqlSpecBuilder<T> {
             return new Criteria(); // Empty criteria fallback
         }
 
+        /**
+         * Creates a Criteria from a LogicalNode, which can be an AND or OR operation.
+         *
+         * @param logicalNode The LogicalNode representing the logical operation
+         * @return A Criteria that combines the criteria of the child nodes using the logical operator.
+         */
         public Criteria createCriteria(LogicalNode logicalNode) {
             List<Criteria> childCriteria = logicalNode.getChildren().stream()
                     .map(this::createCriteria)
@@ -48,6 +61,12 @@ public class MongoRsqlSpecBuilder<T> {
             return new Criteria();
         }
 
+        /**
+         * Creates a Criteria from a ComparisonNode, which represents a comparison operation.
+         *
+         * @param node The ComparisonNode representing the comparison operation
+         * @return A Criteria that represents the comparison operation.
+         */
         public Criteria createCriteria(ComparisonNode node) {
             return new MongoRsqlSpec(node.getSelector(), node.getOperator(), node.getArguments(),
                     entityClass,

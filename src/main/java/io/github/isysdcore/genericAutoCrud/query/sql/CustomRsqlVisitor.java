@@ -11,11 +11,10 @@ import cz.jirutka.rsql.parser.ast.OrNode;
 import cz.jirutka.rsql.parser.ast.RSQLVisitor;
 import org.springframework.data.jpa.domain.Specification;
 
-/**
- *
- * @author domingos.fernando
- * @param <T> The Entity class that represent the database entity
- */
+/// @author domingos.fernando
+/// @param <T> The Entity class that represent the database entity
+/// This class implements a custom RSQL visitor that builds JPA Specifications
+/// from RSQL query nodes. It uses a GenericRsqlSpecBuilder to create the specifications
 public class CustomRsqlVisitor<T> implements RSQLVisitor<Specification<T>, Void> {
 
     private final GenericRsqlSpecBuilder<T> builder;

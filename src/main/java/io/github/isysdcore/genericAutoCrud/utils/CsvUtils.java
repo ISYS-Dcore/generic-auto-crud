@@ -17,10 +17,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * @author domingos.fernando
- *
- */
+/// Utility class for parsing CSV files into Java objects.
+/// This class uses Apache Commons CSV to read the CSV file and map its records
+/// to instances of the specified class type.
+/// It validates the CSV headers against the fields of the class and converts
+/// the values to the appropriate types based on the class field types.
+/// @author domingos.fernando
 @Slf4j
 public class CsvUtils<T> {
 
