@@ -20,6 +20,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
 
 /// GenericEntity is an abstract class that represents a generic entity
 /// in the database. It contains common fields such as id, createdAt,
@@ -38,6 +39,9 @@ public abstract class GenericEntity<K> implements Serializable {
     @Id
     @GeneratedValue
     private K id;
+    @NotNull
+    @Column(name = "resource_ref", nullable = false, unique = true, updatable = false)
+    private String resourceRef = UUID.randomUUID().toString();
     @NotNull
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
