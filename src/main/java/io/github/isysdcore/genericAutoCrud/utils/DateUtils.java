@@ -8,6 +8,11 @@ package io.github.isysdcore.genericAutoCrud.utils;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -18,6 +23,19 @@ import java.util.Locale;
  */
 public class DateUtils
 {
+    // Try common date formats
+    public static DateTimeFormatter[] formatters = {
+            DateTimeFormatter.ISO_LOCAL_DATE,
+            DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss"),
+            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"),
+            DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"),
+            DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss"),
+            DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"),
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"),
+            DateTimeFormatter.ISO_LOCAL_DATE_TIME,
+            DateTimeFormatter.ISO_INSTANT
+    };
+
     public static Date strToDate(String data)
     {
         if (data == null) {
@@ -52,5 +70,27 @@ public class DateUtils
             System.err.println("Erro ao converter String em data: " + pe.getLocalizedMessage());
         }
         return dataF;
+    }
+
+    public static Instant strToInstant(String dateString)
+    {
+        if (dateString.isBlank()){
+            return null;
+        }
+        Instant instant = null;
+        for (DateTimeFormatter formatter : formatters) {
+            try {
+                if (formatter.equals(DateTimeFormatter.ISO_INSTANT)) {
+                    instant = java.time.Instant.parse(dateString);
+                } else if (formatter.equals(DateTimeFormatter.ISO_LOCAL_DATE_TIME)) {
+                    instant = java.time.LocalDateTime.parse(dateString, formatter).toInstant(ZoneOffset.UTC);
+                } else {
+                    instant = Instant.from(LocalDate.parse(dateString, formatter));
+                }
+            } catch (DateTimeParseException e) {
+                // Try next formatter
+            }
+        }
+        return instant;
     }
 }

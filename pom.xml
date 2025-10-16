@@ -4,7 +4,7 @@
 
   <groupId>io.github.isys-dcore</groupId>
   <artifactId>generic-auto-crud</artifactId>
-  <version>0.3.1</version>
+  <version>0.3.2</version>
 <!--  <packaging>jar</packaging>-->
 
   <name>generic-auto-crud</name>
@@ -40,60 +40,31 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
+    <junit.version>4.13.2</junit.version>
+    <jakarta.version>3.1.0</jakarta.version>
+    <lombok.version>1.18.30</lombok.version>
+    <hibernate.version>6.4.4.Final</hibernate.version>
+    <rsql-parser.version>2.1.0</rsql-parser.version>
+    <apache-tomcat.version>11.0.10</apache-tomcat.version>
+    <apache-commons.version>1.14.1</apache-commons.version>
   </properties>
 
   <dependencies>
+<!-- BEGIN of Spring Framework dependencies-->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.2</version>
-      <scope>test</scope>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-jpa</artifactId>
+      <version>3.5.4</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
-      <version>6.1.11</version>
+      <version>6.2.11</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>6.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.validation</groupId>
-      <artifactId>jakarta.validation-api</artifactId>
-      <version>3.0.2</version>
-      <type>jar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.18.30</version>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.persistence</groupId>
-      <artifactId>jakarta.persistence-api</artifactId>
-      <version>3.1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-core</artifactId>
-      <version>6.4.4.Final</version>
-    </dependency>
-    <dependency>
-      <groupId>cz.jirutka.rsql</groupId>
-      <artifactId>rsql-parser</artifactId>
-      <version>2.1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.data</groupId>
-      <artifactId>spring-data-jpa</artifactId>
-      <version>3.2.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.tomcat.embed</groupId>
-      <artifactId>tomcat-embed-core</artifactId>
-      <version>11.0.2</version>
+      <version>6.2.11</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.data</groupId>
@@ -101,19 +72,9 @@
       <version>4.0.3</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-csv</artifactId>
-      <version>1.10.0</version>
-    </dependency>
-    <dependency>
       <groupId>org.springframework.hateoas</groupId>
       <artifactId>spring-hateoas</artifactId>
       <version>2.4.1</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <version>2.18.3</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -121,6 +82,62 @@
       <version>3.4.4</version>
       <scope>test</scope>
     </dependency>
+    <!-- END of Spring Framework dependencies-->
+<!-- BEGIN Test Dependencies -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- END Test Dependencies -->
+<!--    BEGIN of Jakarta Dependencies-->
+    <dependency>
+      <groupId>jakarta.validation</groupId>
+      <artifactId>jakarta.validation-api</artifactId>
+      <version>${jakarta.version}</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+      <version>${jakarta.version}</version>
+    </dependency>
+<!--    END of Jakarta Dependencies-->
+<!--    BEGIN of Others generics Dependencies-->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>${lombok.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>${hibernate.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>cz.jirutka.rsql</groupId>
+      <artifactId>rsql-parser</artifactId>
+      <version>${rsql-parser.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tomcat.embed</groupId>
+      <artifactId>tomcat-embed-core</artifactId>
+      <version>${apache-tomcat.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
+      <version>${apache-commons.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>2.18.3</version>
+    </dependency>
+    <!--    END of Others generics Dependencies-->
   </dependencies>
   <build>
     <plugins>

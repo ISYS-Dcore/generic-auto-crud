@@ -2,18 +2,18 @@ package io.github.isysdcore.genericAutoCrud.generics.cache;
 
 import io.github.isysdcore.genericAutoCrud.generics.GenericEntity;
 import io.github.isysdcore.genericAutoCrud.generics.mongo.MongoGenericRestServiceAbstract;
+import io.github.isysdcore.genericAutoCrud.generics.sql.GenericRestServiceAbstract;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-
 /// Generic class to cache database entities in memory
-/// @Warning This class was marked as deprecated, please use GenericMongoCache or GenericSQLCache instead.
 /// @Warning Use this with caution because load too much information to memory can cause error and other issues
 /// @param <K> Entity id data type
 /// @param <T> Entity type
@@ -26,15 +26,14 @@ import java.util.stream.Collectors;
 ///  cache.addSecondaryIndex("byNameAndType", e -> Arrays.asList(e.getName(), e.getType()));
 ///  // Now you can query in O(1)
 ///  List<MyEntity> list = cache.getByIndex("byNameAndType", Arrays.asList("John", "Admin"));
-@Deprecated(forRemoval = true, since = "0.3.2")
-public class GenericCache<K, T extends GenericEntity<K>, S extends MongoGenericRestServiceAbstract<T,?,?>> {
+public class GenericSQLCache<K, T extends GenericEntity<K>, S extends GenericRestServiceAbstract<T,?,?>> {
 
     private final S entityService;
     private Map<K, T> cacheEntities;
     private final Map<String, Map<Object, List<T>>> secondaryIndexes = new ConcurrentHashMap<>();
     private final Map<String, Function<T, Object>> indexExtractors = new HashMap<>();
 
-    public GenericCache(S entityService){
+    public GenericSQLCache(S entityService){
         this.entityService = entityService;
     }
 

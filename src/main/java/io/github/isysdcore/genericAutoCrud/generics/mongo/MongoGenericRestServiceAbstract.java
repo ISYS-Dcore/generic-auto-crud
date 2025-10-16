@@ -25,6 +25,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 import java.lang.reflect.Field;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -55,7 +56,7 @@ public abstract class MongoGenericRestServiceAbstract<T extends GenericEntity<K>
      */
     public T save(T newEntity) {
        try{
-           newEntity.setCreatedAt(Calendar.getInstance().getTime());
+           newEntity.setCreatedAt(Instant.now());
            return repository.save(newEntity);
         } catch (Exception ex) {
             Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
@@ -139,7 +140,7 @@ public abstract class MongoGenericRestServiceAbstract<T extends GenericEntity<K>
                         });
                         newEntity.setCreatedAt(oldEntity.getCreatedAt());
                         newEntity.setUpdatedBy(oldEntity.getUpdatedBy());
-                        newEntity.setUpdatedAt(Calendar.getInstance().getTime());
+                        newEntity.setUpdatedAt(Instant.now());
                         newEntity.setId(id);
                     } catch (SecurityException | IllegalArgumentException ex) {
                         Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
@@ -175,7 +176,7 @@ public abstract class MongoGenericRestServiceAbstract<T extends GenericEntity<K>
                         });
                         newEntity.setCreatedAt(oldEntity.getCreatedAt());
                         newEntity.setUpdatedBy(updatedBy);
-                        newEntity.setUpdatedAt(Calendar.getInstance().getTime());
+                        newEntity.setUpdatedAt(Instant.now());
                         newEntity.setId(id);
                     } catch (SecurityException | IllegalArgumentException ex) {
                         Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
@@ -193,7 +194,7 @@ public abstract class MongoGenericRestServiceAbstract<T extends GenericEntity<K>
         return repository.findById(id) //
                 .map(oldEntity -> {
                     try {
-                        oldEntity.setDeletedAt(Calendar.getInstance().getTime());
+                        oldEntity.setDeletedAt(Instant.now());
                         oldEntity.setDeleted(Boolean.TRUE);
                     } catch (Exception ex) {
                         Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
@@ -212,7 +213,7 @@ public abstract class MongoGenericRestServiceAbstract<T extends GenericEntity<K>
         return repository.findById(id) //
                 .map(oldEntity -> {
                     try {
-                        oldEntity.setDeletedAt(Calendar.getInstance().getTime());
+                        oldEntity.setDeletedAt(Instant.now());
                         oldEntity.setDeleted(Boolean.TRUE);
                         oldEntity.setDeletedBy(deletedBy);
                     } catch (Exception ex) {

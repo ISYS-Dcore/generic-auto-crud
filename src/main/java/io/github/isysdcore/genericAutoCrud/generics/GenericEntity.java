@@ -9,13 +9,16 @@ import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 
 /// GenericEntity is an abstract class that represents a generic entity
@@ -37,13 +40,11 @@ public abstract class GenericEntity<K> implements Serializable {
     private K id;
     @NotNull
     @CreationTimestamp
-    @Column(nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt;
     @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
-    private Date deletedAt;
+    private Instant updatedAt;
+    private Instant deletedAt;
     private Boolean deleted = false;
     private K updatedBy;
     private K deletedBy;

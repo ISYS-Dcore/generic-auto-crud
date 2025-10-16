@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.metamodel.mapping.ordering.ast.PluralAttributePath;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -177,7 +178,9 @@ public class GenericRsqlSpec<T> implements Specification<T> {
                 return Integer.valueOf(arg);
             } else if (type.equals(Long.class)) {
                 return Long.valueOf(arg);
-            } else if (type.equals(Date.class)) {
+            } else if (type.equals(Instant.class)) {
+                return DateUtils.strToInstant(arg);
+            }  else if (type.equals(Date.class)) {
                 return DateUtils.strToDate(arg);
             } else if (type.equals(Byte.class)) {
                 return Byte.valueOf(arg);
