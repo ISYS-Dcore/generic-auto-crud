@@ -2,7 +2,7 @@
   <profile version="1.0">
     <option name="myName" value="Project Default" />
     <inspection_tool class="JavadocDeclaration" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="ADDITIONAL_TAGS" value="created,project,Warning,code:" />
+      <option name="ADDITIONAL_TAGS" value="created,project,Warning,code:,Component,Override,Service,RequiredArgsConstructor,Auditable(action" />
     </inspection_tool>
     <inspection_tool class="VulnerableLibrariesLocal" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="isIgnoringEnabled" value="true" />

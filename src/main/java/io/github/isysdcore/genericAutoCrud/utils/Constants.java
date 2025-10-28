@@ -27,4 +27,6 @@ public class Constants {
     public static final Integer PAGE_INDEX = 0;
     public static final Integer PAGE_SIZE = 10;
     public static final Integer PAGE_SORT = 1;
+    public static final String AUTH_HEADER_NAME = "X-APP-SEC";
+    public static final String TOKEN_TYPE = "Bearer";
 }
