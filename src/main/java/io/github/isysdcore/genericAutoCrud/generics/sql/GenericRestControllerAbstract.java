@@ -83,8 +83,7 @@ public abstract class GenericRestControllerAbstract<T extends GenericEntity<K>, 
     @GetMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
     public ResponseEntity<EntityModel<T>> findById(@PathVariable(name = "id") K id) {
         try{
-            T entity = serviceImpl.findById(id) //
-                    .orElseThrow(() -> new ResourceNotFoundException("Was not able to find Entity with id " + id));
+            T entity = serviceImpl.findById(id);
             return ResponseEntity.ok(assembler.toModel(entity));
         }catch (Exception e){
             throw e;

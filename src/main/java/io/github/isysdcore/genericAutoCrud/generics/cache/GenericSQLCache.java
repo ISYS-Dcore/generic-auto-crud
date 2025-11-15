@@ -37,6 +37,9 @@ public class GenericSQLCache<K, T extends GenericEntity<K>, S extends GenericRes
         this.entityService = entityService;
     }
 
+    /**
+     * Post construct  initializer
+     */
     @PostConstruct
     public void init() {
         reload();
@@ -55,10 +58,19 @@ public class GenericSQLCache<K, T extends GenericEntity<K>, S extends GenericRes
         });
     }
 
+    /**
+     * Get method to load Instance by key
+     * @param key The identifier of instance
+     * @return an instance of type T
+     */
     public T get(K key) {
         return cacheEntities.get(key);
     }
 
+    /**
+     * Load all instances off type T
+     * @return Map of instances of type T where key is the identifier
+     */
     public Map<K, T> getAll() {
         return Collections.unmodifiableMap(cacheEntities);
     }

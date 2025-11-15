@@ -14,6 +14,7 @@ import io.github.isysdcore.genericAutoCrud.query.mongo.MongoPropertyResolver;
 import io.github.isysdcore.genericAutoCrud.query.mongo.MongoRsqlVisitor;
 import io.github.isysdcore.genericAutoCrud.query.sql.CustomRsqlVisitor;
 import io.github.isysdcore.genericAutoCrud.utils.DefaultSearchParameters;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -70,8 +71,11 @@ public abstract class MongoGenericRestServiceAbstract<T extends GenericEntity<K>
      * @param id The unique main primary key that identify the database entity
      * @return An optional object of type T
      */
-    public Optional<T> findById(K id) {
-        return repository.findById(id);
+    public T findById(K id) {
+        return repository.findById(id).orElseThrow(() -> {
+            Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, new RuntimeException("Error accessing find entity  of type "+ entityClass.getName() +" by id "));
+            return new EntityNotFoundException("Error was unable to find entity with id: " + id.toString() + " on database.");
+        });
     }
     /**
      *

@@ -11,6 +11,7 @@ import io.github.isysdcore.genericAutoCrud.query.sql.CustomRsqlVisitor;
 import io.github.isysdcore.genericAutoCrud.utils.DefaultSearchParameters;
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.Node;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
@@ -53,9 +54,13 @@ public abstract class GenericRestServiceAbstract<T extends GenericEntity<K>, R e
      * @param id The unique main primary key that identify the database entity
      * @return An optional object of type T
      */
-    public Optional<T> findById(K id) {
-        return repository.findById(id);
+    public T findById(K id) {
+        return repository.findById(id).orElseThrow(() -> {
+            Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, new RuntimeException("Error accessing find entity of type by id "));
+            return new EntityNotFoundException("Error was unable to find entity with id: " + id.toString() + " on database.");
+        });
     }
+
     /**
      *
      * @param page The page counter start by 0
