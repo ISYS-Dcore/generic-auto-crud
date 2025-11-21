@@ -19,7 +19,7 @@ Add the dependency to your `pom.xml`:
 <dependency>
     <groupId>io.github.isys-dcore</groupId>
     <artifactId>generic-auto-crud</artifactId>
-    <version>0.2.74</version>
+    <version>0.4.3</version>
 </dependency>
 ```
 
@@ -38,6 +38,7 @@ Or simply **Build** from your IDE.
 - ✅ Auto-generate CRUD APIs for entities with SQL and MongoDB  
 - 🌳 Extensible and overridable methods (service & controller levels)  
 - ⚡ Compatible with **Java 11+** and **Spring Boot 3.x**  
+- Automátic audit log
 - 🔧 Out-of-the-box classes:
   - **EntityRepository** – database access  
   - **EntityServiceImplementation** – business logic layer  
@@ -215,33 +216,119 @@ public class MongoConfig {
 
 ---
 
-## ⚡ Cache Support
+## 🕵️ Auditable Interface
 
-This library includes an optional in-memory caching mechanism.  
+Track user and system operations automatically using the `@Auditable` annotation or manually via `AuditService`.
 
-### ⚠️ Warning
-- **High Memory Usage** – avoid caching large datasets  
-- **Stale Data** – cache must be refreshed or invalidated  
-- **Server Load** – reloading large caches can impact CPU/GC  
+### Option 1: Annotation (AOP)
 
-✅ Best Practices:
-- Only cache frequently accessed, lightweight entities  
-- Monitor heap/GC in production  
-- Use distributed cache invalidation if running multiple service instances  
+Annotate your methods to automatically log actions.
+
+```java
+@Service
+public class UserService {
+
+    @Auditable(action = "USER_CREATED", entity = "User")
+    public void createUser(User user) {
+        // Business logic...
+    }
+}
+```
+
+### Option 2: Manual Logging
+
+Inject `AuditService` to log complex or conditional events.
+
+```java
+@Service
+@RequiredArgsConstructor
+public class FileProcessingService {
+    private final AuditService auditService;
+
+    public void processFile(String fileName) {
+        // ... processing logic
+        auditService.log("system", "FILE_PROCESSED", "File", fileName, "File processed successfully");
+    }
+}
+```
+
+### Automatic User Tracking
+To automatically track the current user (actor), configure a filter:
+
+```java
+// Example Spring Security Filter
+AuditContext.setCurrentActor(auth.getName());
+```
 
 ---
+
+## 📄 CSV Utilities
+
+Easily parse CSV files into Java objects or Maps using `CsvUtils`.
+
+### Parse to Entity List
+
+```java
+@Autowired
+private CsvUtils<Person> csvUtils;
+
+public void importPeople(byte[] csvBytes) {
+    List<Person> people = csvUtils.parseCsv(csvBytes, Person.class);
+    people.forEach(repository::save);
+}
+```
+
+### Parse to Generic Map
+
+```java
+Set<String> expectedFields = Set.of("name", "email");
+List<Map<String, Object>> records = csvUtils.parseCsvToGenericMap(csvBytes, expectedFields);
+```
+
+---
+
+## ⚡ Cache Support
+
+This library provides in-memory caching implementations for both SQL and MongoDB.
+
+### Classes
+- **GenericSQLCache** – For JPA/SQL entities
+- **GenericMongoCache** – For MongoDB documents
+
+### ⚠️ Warning
+- **High Memory Usage** – avoid caching large datasets
+- **Stale Data** – cache must be refreshed or invalidated manually
+- **Server Load** – reloading large caches can impact CPU/GC
+
+✅ **Best Practices**:
+- Only cache frequently accessed, lightweight entities (e.g., configurations, types)
+- Monitor heap/GC in production
+- Use distributed cache (Redis/Hazelcast) for large-scale apps instead of this in-memory solution
 
 ### Example Usage
 
 ```java
-GenericCache<String, Person, PrsonService> cache = new GenericCache<>(PrsonService);
+@Service
+public class PersonService extends GenericRestServiceAbstract<Person, PersonRepository, UUID> {
+    
+    private final GenericSQLCache<UUID, Person, PersonService> cache;
 
-// Add secondary indexes
-cache.addSecondaryIndex("byName", e -> e.getName());
-cache.addSecondaryIndex("byNameAndType", e -> Arrays.asList(e.getName(), e.getType()));
+    public PersonService(PersonRepository repository) {
+        super(repository);
+        this.cache = new GenericSQLCache<>(this);
+        
+        // Initialize cache
+        this.cache.init();
+        
+        // Add secondary indexes for O(1) lookup
+        this.cache.addSecondaryIndex("byName", Person::getName);
+    }
 
-// Query in O(1)
-List<MyEntity> list = cache.getByIndex("byNameAndType", Arrays.asList("John", "Admin"));
+    public Person findByNameCached(String name) {
+        List<Person> results = cache.getByIndex("byName", name);
+        return results.isEmpty() ? null : results.get(0);
+    }
+}
 ```
 
 ---
