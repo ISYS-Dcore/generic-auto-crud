@@ -37,9 +37,10 @@ public abstract class GenericEntity<ID extends Serializable> implements Serializ
     @Serial
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(insertable = false, updatable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", updatable = false, nullable = false)
     private ID id;
+
     @NotNull
     @Column(name = "resource_ref", nullable = false, unique = true, updatable = false)
     private String resourceRef = UUID.randomUUID().toString();
