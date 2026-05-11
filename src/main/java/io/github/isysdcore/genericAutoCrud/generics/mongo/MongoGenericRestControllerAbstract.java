@@ -19,26 +19,28 @@ import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.Serializable;
+
 /// MongoGenericRestControllerAbstract is an abstract class that provides a
 /// @author domingos.fernando
-/// @param <T> The Entity class that represent the database entity
-/// @param <S> The service Implementation that already modified by entity injection
-/// @param <K> The Class type that represent the id field datatype of entity of type T
-public abstract class MongoGenericRestControllerAbstract<T extends GenericEntity<K>, S extends MongoGenericRestServiceAbstract<T,?,K>, K> implements GenericRestController<T, K> {
+/// @param <ENTITY> The Entity class that represent the database entity
+/// @param <SERVICE> The service Implementation that already modified by entity injection
+/// @param <ID> The Class type that represent the id field datatype of entity of type ENTITY
+public abstract class MongoGenericRestControllerAbstract<ENTITY extends GenericEntity<ID>, SERVICE extends MongoGenericRestServiceAbstract<ENTITY,?,ID>, ID extends Serializable> implements GenericRestController<ENTITY, ID> {
 
     @Getter
     private final String RESOIRCE_NAME = "";
     @Getter
-    private final GenericModelAssembler<T> assembler;
-    private final S serviceImpl;
-    private T object;
+    private final GenericModelAssembler<ENTITY> assembler;
+    private final SERVICE serviceImpl;
+    private ENTITY object;
 
-    public MongoGenericRestControllerAbstract(S serviceImpl) {
+    public MongoGenericRestControllerAbstract(SERVICE serviceImpl) {
         this.assembler = new GenericModelAssembler<>( this);
         this.serviceImpl = serviceImpl;
     }
 
-    public MongoGenericRestControllerAbstract(S serviceImpl, T entity) {
+    public MongoGenericRestControllerAbstract(SERVICE serviceImpl, ENTITY entity) {
         this.assembler = new GenericModelAssembler<>( this);
         this.serviceImpl = serviceImpl;
         this.object = entity;
@@ -46,7 +48,7 @@ public abstract class MongoGenericRestControllerAbstract<T extends GenericEntity
 
     @Override
     @GetMapping(value = RESOIRCE_NAME, params = {Constants.PAGE, Constants.SIZE, Constants.SORT})
-    public Page<T> findAll(@RequestParam(value = Constants.PAGE) int page,
+    public Page<ENTITY> findAll(@RequestParam(value = Constants.PAGE) int page,
                            @RequestParam(value = Constants.SIZE) int size,
                            @RequestParam(value = Constants.SORT) int sort) {
         try {
@@ -61,7 +63,7 @@ public abstract class MongoGenericRestControllerAbstract<T extends GenericEntity
     @GetMapping(value = RESOIRCE_NAME + Constants.RESOURCE_SEARCH,
             params = {Constants.PAGE, Constants.SIZE, Constants.SORT,
                     Constants.QUERY})
-    public Page<T> findByQuery(
+    public Page<ENTITY> findByQuery(
             @RequestParam(value = Constants.PAGE) int page,
             @RequestParam(value = Constants.SIZE) int size,
             @RequestParam(value = Constants.SORT) int sort,
@@ -76,9 +78,9 @@ public abstract class MongoGenericRestControllerAbstract<T extends GenericEntity
 
     @Override
     @GetMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
-    public ResponseEntity<EntityModel<T>> findById(@PathVariable(name = "id") K id) {
+    public ResponseEntity<EntityModel<ENTITY>> findById(@PathVariable(name = "id") ID id) {
         try{
-            T entity = serviceImpl.findById(id);
+            ENTITY entity = serviceImpl.findById(id);
             return ResponseEntity.ok(assembler.toModel(entity));
         }catch (Exception e){
             throw e;
@@ -87,10 +89,10 @@ public abstract class MongoGenericRestControllerAbstract<T extends GenericEntity
 
     @Override
     @PostMapping(RESOIRCE_NAME)
-    public ResponseEntity<?> create(@RequestBody T newEntity) {
+    public ResponseEntity<?> create(@RequestBody ENTITY newEntity) {
         try{
-            T saved = serviceImpl.save(newEntity);
-            EntityModel<T> entityModel = assembler.toModel(saved);
+            ENTITY saved = serviceImpl.save(newEntity);
+            EntityModel<ENTITY> entityModel = assembler.toModel(saved);
             return ResponseEntity //
                     .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
                     .body(entityModel);
@@ -101,10 +103,10 @@ public abstract class MongoGenericRestControllerAbstract<T extends GenericEntity
 
     @Override
     @PutMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
-    public ResponseEntity<?> update(@PathVariable(name = "id") K id, @RequestBody T newEntity) {
+    public ResponseEntity<?> update(@PathVariable(name = "id") ID id, @RequestBody ENTITY newEntity) {
 
         try{
-            EntityModel<T> entityModel = assembler.toModel(serviceImpl.update(id, newEntity));
+            EntityModel<ENTITY> entityModel = assembler.toModel(serviceImpl.update(id, newEntity));
             return ResponseEntity //
                     .ok(entityModel);
         }catch (Exception e){
@@ -115,9 +117,9 @@ public abstract class MongoGenericRestControllerAbstract<T extends GenericEntity
 
     @Override
     @DeleteMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
-    public ResponseEntity<?> delete(@PathVariable(name = "id") K id) {
+    public ResponseEntity<?> delete(@PathVariable(name = "id") ID id) {
         try{
-            EntityModel<T> entityModel = assembler.toModel(serviceImpl.delete(id));
+            EntityModel<ENTITY> entityModel = assembler.toModel(serviceImpl.delete(id));
             return ResponseEntity //
                     .noContent()
                     .build();
@@ -127,7 +129,7 @@ public abstract class MongoGenericRestControllerAbstract<T extends GenericEntity
 
     }
 
-    public S getServiceImpl() {
+    public SERVICE getServiceImpl() {
         return serviceImpl;
     }
 }

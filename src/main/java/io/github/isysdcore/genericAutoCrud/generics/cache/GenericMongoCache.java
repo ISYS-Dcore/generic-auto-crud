@@ -4,6 +4,7 @@ import io.github.isysdcore.genericAutoCrud.generics.GenericEntity;
 import io.github.isysdcore.genericAutoCrud.generics.mongo.MongoGenericRestServiceAbstract;
 import jakarta.annotation.PostConstruct;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -14,9 +15,9 @@ import java.util.stream.Collectors;
 
 /// Generic class to cache database entities in memory
 /// @Warning Use this with caution because load too much information to memory can cause error and other issues
-/// @param <K> Entity id data type
-/// @param <T> Entity type
-/// @param <S> The service that provide entity operations
+/// @param <ID> Entity id data type
+/// @param <ENTITY> Entity type
+/// @param <SERVICE> The service that provide entity operations
 /// @code Example:
 ///  GenericCache<String, MyEntity, MyService> cache =
 ///  new GenericCache<>(myService);
@@ -25,14 +26,14 @@ import java.util.stream.Collectors;
 ///  cache.addSecondaryIndex("byNameAndType", e -> Arrays.asList(e.getName(), e.getType()));
 ///  // Now you can query in O(1)
 ///  List<MyEntity> list = cache.getByIndex("byNameAndType", Arrays.asList("John", "Admin"));
-public class GenericMongoCache<K, T extends GenericEntity<K>, S extends MongoGenericRestServiceAbstract<T,?,?>> {
+public class GenericMongoCache<ID extends Serializable, ENTITY extends GenericEntity<ID>, SERVICE extends MongoGenericRestServiceAbstract<ENTITY,?,?>> {
 
-    private final S entityService;
-    private Map<K, T> cacheEntities;
-    private final Map<String, Map<Object, List<T>>> secondaryIndexes = new ConcurrentHashMap<>();
-    private final Map<String, Function<T, Object>> indexExtractors = new HashMap<>();
+    private final SERVICE entityService;
+    private Map<ID, ENTITY> cacheEntities;
+    private final Map<String, Map<Object, List<ENTITY>>> secondaryIndexes = new ConcurrentHashMap<>();
+    private final Map<String, Function<ENTITY, Object>> indexExtractors = new HashMap<>();
 
-    public GenericMongoCache(S entityService){
+    public GenericMongoCache(SERVICE entityService){
         this.entityService = entityService;
     }
 
@@ -42,23 +43,23 @@ public class GenericMongoCache<K, T extends GenericEntity<K>, S extends MongoGen
     }
 
     public void reload() {
-        List<T> allEntities = entityService.findAll(0, 100, 1).stream().toList();
+        List<ENTITY> allEntities = entityService.findAll(0, 100, 1).stream().toList();
         cacheEntities = allEntities.stream()
-                .collect(Collectors.toMap(T::getId, Function.identity()));
+                .collect(Collectors.toMap(ENTITY::getId, Function.identity()));
         // Secondary indexes
         secondaryIndexes.clear();
         indexExtractors.forEach((name, extractor) -> {
-            Map<Object, List<T>> indexMap = allEntities.stream()
+            Map<Object, List<ENTITY>> indexMap = allEntities.stream()
                     .collect(Collectors.groupingBy(extractor, HashMap::new, Collectors.toList()));
             secondaryIndexes.put(name, indexMap);
         });
     }
 
-    public T get(K key) {
+    public ENTITY get(ID key) {
         return cacheEntities.get(key);
     }
 
-    public Map<K, T> getAll() {
+    public Map<ID, ENTITY> getAll() {
         return Collections.unmodifiableMap(cacheEntities);
     }
 
@@ -67,7 +68,7 @@ public class GenericMongoCache<K, T extends GenericEntity<K>, S extends MongoGen
      * @param name The name of the index.
      * @param keyExtractor A function that extracts the key for the index from an entity.
      */
-    public void addSecondaryIndex(String name, Function<T, Object> keyExtractor) {
+    public void addSecondaryIndex(String name, Function<ENTITY, Object> keyExtractor) {
         indexExtractors.put(name, keyExtractor);
     }
 
@@ -77,7 +78,7 @@ public class GenericMongoCache<K, T extends GenericEntity<K>, S extends MongoGen
      * @param key The key to search for in the index.
      * @return A list of entities that match the key in the specified index.
      */
-    public List<T> getByIndex(String indexName, Object key) {
+    public List<ENTITY> getByIndex(String indexName, Object key) {
         return secondaryIndexes
                 .getOrDefault(indexName, Collections.emptyMap())
                 .getOrDefault(key, Collections.emptyList());

@@ -25,6 +25,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.util.Arrays;
@@ -36,26 +37,26 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /// @author domingos.fernando
-/// @param <T> The Entity class that represent the database entity
-/// @param <R> The generic Repository modified by entity and id datatype injected
-/// @param <K> The Class type that represent the id field datatype of entity of type T
+/// @param <ENTITY> The Entity class that represent the database entity
+/// @param <REPOSITORY> The generic Repository modified by entity and id datatype injected
+/// @param <ID> The Class type that represent the id field datatype of entity of type ENTITY
 @RequiredArgsConstructor
-public abstract class MongoGenericRestServiceAbstract<T extends GenericEntity<K>, R extends MongoGenericRepository<T,K>, K>{
+public abstract class MongoGenericRestServiceAbstract<ENTITY extends GenericEntity<ID>, REPOSITORY extends MongoGenericRepository<ENTITY,ID>, ID extends Serializable>{
 
     @Autowired
-    public R repository;
+    public REPOSITORY repository;
     @Autowired
     private MongoTemplate mongoTemplate;
-    private final Class<T> entityClass;
+    private final Class<ENTITY> entityClass;
     @Autowired
     private MongoPropertyResolver mongoPropertyResolver;
 
     /**
      *
-     * @param newEntity The new entity registry of type T to store in database
-     * @return A database saved entity of type T
+     * @param newEntity The new entity registry of type ENTITY to store in database
+     * @return A database saved entity of type ENTITY
      */
-    public T save(T newEntity) {
+    public ENTITY save(ENTITY newEntity) {
        try{
            newEntity.setCreatedAt(Instant.now());
            return repository.save(newEntity);
@@ -69,9 +70,9 @@ public abstract class MongoGenericRestServiceAbstract<T extends GenericEntity<K>
     /**
      *
      * @param id The unique main primary key that identify the database entity
-     * @return An optional object of type T
+     * @return An optional object of type ENTITY
      */
-    public T findById(K id) {
+    public ENTITY findById(ID id) {
         return repository.findById(id).orElseThrow(() -> {
             Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, new RuntimeException("Error accessing find entity  of type "+ entityClass.getName() +" by id "));
             return new EntityNotFoundException("Error was unable to find entity with id: " + id.toString() + " on database.");
@@ -82,9 +83,9 @@ public abstract class MongoGenericRestServiceAbstract<T extends GenericEntity<K>
      * @param page The page counter start by 0
      * @param size The amount of items per page
      * @param sort The order of result 1 for ASC and -1 for DESC, default 0
-     * @return Pageable object of type T
+     * @return Pageable object of type ENTITY
      */
-    public Page<T> findAll(int page, int size, int sort) {
+    public Page<ENTITY> findAll(int page, int size, int sort) {
         return repository.findAll(DefaultSearchParameters.preparePages(page, size, sort));
     }
     /**
@@ -93,9 +94,9 @@ public abstract class MongoGenericRestServiceAbstract<T extends GenericEntity<K>
      * @param page The page counter start by 0
      * @param size The amount of items per page
      * @param sort The order of result 1 for ASC and -1 for DESC, default 0
-     * @return Pageable object of type T
+     * @return Pageable object of type ENTITY
      */
-    public Page<T> findAll(String query, int page, int size, int sort) {
+    public Page<ENTITY> findAll(String query, int page, int size, int sort) {
         String defaultQuery = "deleted==false;(" + query + ")";
         Node rootNode = new RSQLParser().parse(defaultQuery);
         Criteria criteria = rootNode.accept(new MongoRsqlVisitor<>(entityClass, mongoPropertyResolver));
@@ -103,14 +104,14 @@ public abstract class MongoGenericRestServiceAbstract<T extends GenericEntity<K>
         Query finalQuery = new Query(criteria)
                 .skip(pageable.getOffset())
                 .limit(pageable.getPageSize());
-        List<T> content = mongoTemplate.find(finalQuery, entityClass);
+        List<ENTITY> content = mongoTemplate.find(finalQuery, entityClass);
         long total = mongoTemplate.count(new Query(criteria),entityClass);
         return new PageImpl<>(content, pageable, total);
     }
     /**
      *
      * @param condToCount Query to use as a condition to count follow the syntax "fieldName==value"
-     * @return The amount of entities of type T that match de condition
+     * @return The amount of entities of type ENTITY that match de condition
      */
     public long count(String condToCount) {
         condToCount = "deleted==FALSE;(" + condToCount + ")";
@@ -121,10 +122,10 @@ public abstract class MongoGenericRestServiceAbstract<T extends GenericEntity<K>
     /**
      *
      * @param id The unique main primary key that identify the database entity
-     * @param newEntity The new entity registry of type T that will be used to update the old entity registry
-     * @return Updated registry of type T
+     * @param newEntity The new entity registry of type ENTITY that will be used to update the old entity registry
+     * @return Updated registry of type ENTITY
      */
-    public T update(K id, T newEntity) {
+    public ENTITY update(ID id, ENTITY newEntity) {
         return repository.findById(id) //
                 .map(oldEntity -> {
                     try {
@@ -156,11 +157,11 @@ public abstract class MongoGenericRestServiceAbstract<T extends GenericEntity<K>
     /**
      *
      * @param id The unique main primary key that identify the database entity
-     * @param newEntity The new entity registry of type T that will be used to update the old entity registry
+     * @param newEntity The new entity registry of type ENTITY that will be used to update the old entity registry
      * @param updatedBy The primary key from the user or identity that perform this update
-     * @return Updated registry of type T
+     * @return Updated registry of type ENTITY
      */
-    public T update(K id, T newEntity, K updatedBy) {
+    public ENTITY update(ID id, ENTITY newEntity, ID updatedBy) {
         return repository.findById(id) //
                 .map(oldEntity -> {
                     try {
@@ -194,7 +195,7 @@ public abstract class MongoGenericRestServiceAbstract<T extends GenericEntity<K>
      * @param id The unique main primary key that identify the database registry entity
      * @return The entity founded in database or not found exception
      */
-    public T delete(K id) {
+    public ENTITY delete(ID id) {
         return repository.findById(id) //
                 .map(oldEntity -> {
                     try {
@@ -213,7 +214,7 @@ public abstract class MongoGenericRestServiceAbstract<T extends GenericEntity<K>
      * @param deletedBy The primary key from person or entity that perform the deletion
      * @return The entity founded in database or not found exception
      */
-    public T delete(K id, K deletedBy) {
+    public ENTITY delete(ID id, ID deletedBy) {
         return repository.findById(id) //
                 .map(oldEntity -> {
                     try {
