@@ -4,7 +4,7 @@
 
   <groupId>io.github.isys-dcore</groupId>
   <artifactId>generic-auto-crud</artifactId>
-  <version>0.4.3</version>
+  <version>0.4.32</version>
 <!--  <packaging>jar</packaging>-->
 
   <name>generic-auto-crud</name>
@@ -45,7 +45,7 @@
     <lombok.version>1.18.30</lombok.version>
     <hibernate.version>6.4.4.Final</hibernate.version>
     <rsql-parser.version>2.1.0</rsql-parser.version>
-    <apache-tomcat.version>11.0.10</apache-tomcat.version>
+    <apache-tomcat.version>11.0.21</apache-tomcat.version>
     <apache-commons.version>1.14.1</apache-commons.version>
   </properties>
 
@@ -59,17 +59,23 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
-      <version>6.2.11</version>
+      <version>7.0.7</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>6.2.11</version>
+      <version>7.0.7</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.data</groupId>
       <artifactId>spring-data-mongodb</artifactId>
       <version>4.0.3</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-core</artifactId>
+        <!-- Use the version compatible with your Spring Boot setup -->
+        <version>7.0.5</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.hateoas</groupId>
@@ -91,12 +97,31 @@
       <scope>test</scope>
     </dependency>
     <!-- END Test Dependencies -->
+    <!-- BEGIN MAP Dependencies -->
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
+      <version>1.5.5.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct-processor</artifactId>
+      <version>1.5.5.Final</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- END of MAP Dependencies -->
 <!--    BEGIN of Jakarta Dependencies-->
     <dependency>
       <groupId>jakarta.validation</groupId>
       <artifactId>jakarta.validation-api</artifactId>
       <version>${jakarta.version}</version>
       <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.platform</groupId>
+      <artifactId>jakarta.jakartaee-api</artifactId>
+      <version>9.1.0</version> <!-- Use 10.0.0 for Jakarta EE 10 -->
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>jakarta.persistence</groupId>

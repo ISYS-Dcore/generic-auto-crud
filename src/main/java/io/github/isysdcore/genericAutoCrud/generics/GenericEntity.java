@@ -27,18 +27,19 @@ import java.util.UUID;
 /// updatedAt, deletedAt, deleted, updatedBy, and deletedBy.
 /// This class is intended to be extended by other entity classes
 /// @author domingos.fernando
-/// @param <K> The Datatype for field ID, must be Long for numerical Ids or UUID for uuid ids,
+/// @param <ID> The Datatype for field ID, must be Long for numerical Ids or UUID for uuid ids,
 ///          its will be mapped as Primary key in the database table.
 @Getter
 @Setter
 @MappedSuperclass
 @JsonIgnoreProperties(value = {"deleted", "deletedAt", "updatedAt", "createdAt", "updatedBy", "deletedBy"}, allowSetters = true)
-public abstract class GenericEntity<K> implements Serializable {
+public abstract class GenericEntity<ID extends Serializable> implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue
-    private K id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(insertable = false, updatable = false)
+    private ID id;
     @NotNull
     @Column(name = "resource_ref", nullable = false, unique = true, updatable = false)
     private String resourceRef = UUID.randomUUID().toString();
@@ -50,7 +51,18 @@ public abstract class GenericEntity<K> implements Serializable {
     private Instant updatedAt;
     private Instant deletedAt;
     private Boolean deleted = false;
-    private K updatedBy;
-    private K deletedBy;
+    private ID updatedBy;
+    private ID deletedBy;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = Instant.now();
+        updatedAt = Instant.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = Instant.now();
+    }
 
 }

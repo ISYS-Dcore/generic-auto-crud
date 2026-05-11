@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.github.isysdcore.genericAutoCrud.generics;
+package io.github.isysdcore.genericAutoCrud.generics.dto;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -11,18 +11,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 /**
- *
  * @author domingos.fernando
- * @param <ENTITY> The Entity class that represent the database entity
+ * @param <DTO> The Data Transfer Object DTO to output or response information DO (Data Output)
  * @param <ID> The Class type that represent the id field datatype of entity of type T
  */
-public interface GenericRestController<ENTITY, ID> {
+public interface GenericRestControllerDto<DTO, ID> {
 
     /**
      *
-     * @return All Object of type ENTITY
+     * @return All Object of type T
      */
-    public Page<ENTITY> findAll(int page, int size, int sort);
+    public Page<DTO> findAll(int page, int size, int sort);
 
     /**
      *
@@ -32,7 +31,7 @@ public interface GenericRestController<ENTITY, ID> {
      * @param query - Is the query that we are searched for.
      * @return a paginated list of objects from type.
      */
-    public Page<ENTITY> findByQuery(int page, int size, int sort, String query);
+    public Page<DTO> findByQuery(int page, int size, int sort, String query);
 
     /**
      *
@@ -46,7 +45,7 @@ public interface GenericRestController<ENTITY, ID> {
      * @param newEntity - New entity to persist on database
      * @return - The created entity
      */
-    public ResponseEntity<?> create(@RequestBody ENTITY newEntity);
+    public ResponseEntity<?> create(@RequestBody DTO newEntity);
 
     /**
      *
@@ -54,7 +53,7 @@ public interface GenericRestController<ENTITY, ID> {
      * @param newEntity - Entity with de new data.
      * @return - The updated Entity
      */
-    public ResponseEntity<?> update(@PathVariable ID id, @RequestBody ENTITY newEntity);
+    public ResponseEntity<?> update(@PathVariable ID id, @RequestBody DTO newEntity);
 
     /**
      *

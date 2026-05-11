@@ -6,7 +6,9 @@
 [![Codecov Coverage][coverage-badge]][coverage-url]
 [![Issues][issues-badge]][issues-url]
 
-_🚀 Build Java Spring Boot RESTful APIs in minutes — no boilerplate code required._
+_🚀 Build Java Spring Boot RESTful APIs in minutes — no boilerplate code required.
+
+#### by: Domingos Masta
 
 ---
 
@@ -19,7 +21,7 @@ Add the dependency to your `pom.xml`:
 <dependency>
     <groupId>io.github.isys-dcore</groupId>
     <artifactId>generic-auto-crud</artifactId>
-    <version>0.4.3</version>
+    <version>0.4.32</version>
 </dependency>
 ```
 
@@ -35,14 +37,22 @@ Or simply **Build** from your IDE.
 
 ## ✨ Features
 
-- ✅ Auto-generate CRUD APIs for entities with SQL and MongoDB  
-- 🌳 Extensible and overridable methods (service & controller levels)  
-- ⚡ Compatible with **Java 11+** and **Spring Boot 3.x**  
-- Automátic audit log
+- ✅ Auto-generate CRUD APIs for entities with SQL and MongoDB
+- 🌳 Extensible and overridable methods (service & controller levels)
+- ⚡ Compatible with **Java 11+** and **Spring Boot 3.x**
+- 🔊 Automatic audit logs with `@Auditable` annotation and `AuditService`
+- 🔄 **DTO Support** – Built-in DTO mapping and transformation for cleaner APIs
+- 📁 **File Storage Service** – Automatic file upload, download, and deletion utilities
+- 🧪 **Generic Test Support** – Pre-built integration test base class with CRUD test templates
+- 🛡️ **Comprehensive Exception Handling** – 15+ exception types handled automatically
+- 🔗 **HATEOAS Support** – Hypermedia-driven APIs with Spring HATEOAS
+- 🔐 **Authentication Testing** – JWT token handling and authentication test utilities
 - 🔧 Out-of-the-box classes:
-  - **EntityRepository** – database access  
-  - **EntityServiceImplementation** – business logic layer  
-  - **EntityRestController** – REST API endpoints  
+    - **EntityRepository** – database access
+    - **EntityServiceImplementation** – business logic layer
+    - **EntityRestController** – REST API endpoints
+    - **EntityServiceImplementationDto** – DTO service layer
+    - **EntityRestControllerDto** – DTO REST endpoints
 
 ---
 
@@ -73,7 +83,8 @@ public class Person extends GenericEntity<UUID> {
 }
 ```
 
-> `GenericEntity<UUID>` provides a built-in **ID field**, plus audit fields (`createdAt`, `updatedAt`, `deletedAt`).  
+> `GenericEntity<UUID>` provides a built-in **ID field**, plus audit fields (`createdAt`, `updatedAt`, `deletedAt`, `updatedBy`, `deletedBy`).  
+> It also includes a **`resourceRef`** field (UUID) for unique resource identification.
 > ID type can be `UUID`, `Long`, `Integer`, or even `String`.
 
 ---
@@ -103,9 +114,9 @@ public class PersonServiceImpl extends GenericRestServiceAbstract<Person, Person
 }
 ```
 
-- Extends `GenericRestServiceAbstract`  
-- You can override any method (optional)  
-- Without overrides, the service acts as a transparent middleware  
+- Extends `GenericRestServiceAbstract`
+- You can override any method (optional)
+- Without overrides, the service acts as a transparent middleware
 
 ---
 
@@ -122,17 +133,98 @@ public class PersonRestController extends GenericRestControllerAbstract<Person, 
 ```
 
 > All CRUD endpoints are now automatically exposed via REST.  
-> Use Swagger/OpenAPI to explore them easily.  
+> Use Swagger/OpenAPI to explore them easily.
+
+---
+
+## 🔄 DTO Support (SQL & MongoDB)
+
+Use DTOs to decouple your API contract from internal domain models.
+
+### Step 1 – Create a DTO
+
+```java
+@Data
+@Builder
+public class PersonDto extends GenericDto<UUID> {
+    private String name;
+    private Date dob;
+    private String docId;
+}
+```
+
+### Step 2 – Implement a DTO Mapper
+
+```java
+@Component
+public class PersonDtoMapper implements GenericDTOMapper<PersonDto, Person> {
+    
+    @Override
+    public PersonDto toDto(Person entity) {
+        return PersonDto.builder()
+            .id(entity.getId())
+            .name(entity.getName())
+            .dob(entity.getDob())
+            .docId(entity.getDocId())
+            .build();
+    }
+
+    @Override
+    public Person toEntity(PersonDto dto) {
+        return Person.builder()
+            .id(dto.getId())
+            .name(dto.getName())
+            .dob(dto.getDob())
+            .docId(dto.getDocId())
+            .build();
+    }
+
+    @Override
+    public List<PersonDto> toDtoList(List<Person> entities) {
+        return entities.stream().map(this::toDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Person> toEntityList(List<PersonDto> dtos) {
+        return dtos.stream().map(this::toEntity).collect(Collectors.toList());
+    }
+}
+```
+
+### Step 3 – Service with DTO Support
+
+```java
+@Service
+public class PersonServiceImplDto extends GenericRestServiceAbstractDto<Person, PersonDto, PersonRepository, PersonDtoMapper, UUID> {
+    public PersonServiceImplDto(PersonRepository repository, PersonDtoMapper mapper) {
+        super(repository, mapper);
+    }
+}
+```
+
+### Step 4 – REST Controller with DTO
+
+```java
+@RestController
+@RequestMapping(FULL_API_URL_BASE_NAME + "/person")
+public class PersonRestControllerDto extends GenericRestControllerAbstractDto<Person, PersonDto, PersonServiceImplDto, UUID> {
+    public PersonRestControllerDto(PersonServiceImplDto serviceImpl) {
+        super(serviceImpl);
+    }
+}
+```
+
+> Now your API accepts and returns `PersonDto` objects instead of raw entities!
 
 ---
 
 ## 🍃 MongoDB Example
 
 Steps are similar to SQL.  
-The main differences are:  
+The main differences are:
 
-- Use `@Document` instead of `@Entity`  
-- Extend **Mongo** versions of repository and service classes  
+- Use `@Document` instead of `@Entity`
+- Extend **Mongo** versions of repository and service classes
 
 ### Step 1 – Entity
 
@@ -262,6 +354,49 @@ AuditContext.setCurrentActor(auth.getName());
 
 ---
 
+## 📁 File Storage Service
+
+Handle file uploads, downloads, and deletions with automatic directory management.
+
+### Save a File
+
+```java
+@Service
+@RequiredArgsConstructor
+public class DocumentService {
+    
+    public String uploadDocument(MultipartFile file) {
+        return FileStorageService.saveFile(file, "/uploads/documents");
+    }
+}
+```
+
+### Read a File
+
+```java
+public byte[] downloadDocument(String fileName) {
+    return FileStorageService.readFile(fileName, "/uploads/documents");
+}
+```
+
+### Delete a File
+
+```java
+public boolean removeDocument(String fileName) {
+    return FileStorageService.deleteFile(fileName, "/uploads/documents");
+}
+```
+
+### Check if File Exists
+
+```java
+public boolean documentExists(String fileName) {
+    return FileStorageService.fileExists(fileName, "/uploads/documents");
+}
+```
+
+---
+
 ## 📄 CSV Utilities
 
 Easily parse CSV files into Java objects or Maps using `CsvUtils`.
@@ -335,7 +470,7 @@ public class PersonService extends GenericRestServiceAbstract<Person, PersonRepo
 
 ## 🔍 Advanced RSQL Search
 
-This library supports **RSQL-based queries** without writing custom repository methods.  
+This library supports **RSQL-based queries** without writing custom repository methods.
 
 Example request with `curl`:
 
@@ -350,6 +485,160 @@ SELECT * FROM Person p WHERE p.name LIKE '%mingo%';
 ```
 
 More on RSQL: [rsql-parser](https://github.com/jirutka/rsql-parser)
+
+---
+
+## 🧪 Generic Test Support
+
+Built-in integration testing framework for CRUD operations with authentication support.
+
+### Create a Test Class
+
+```java
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class PersonControllerTest extends GenericRestAbstractIntegrationTests<Person, PersonServiceImpl> {
+    
+    public PersonControllerTest() {
+        super(new Person(), new TestProperties(
+            resourceUrl = "/api/person",
+            auth = false  // Set to true if your API requires authentication
+        ));
+    }
+
+    @Override
+    public void authenticationManagement() throws Exception {
+        // Leave empty if no authentication is needed
+        // Or implement authentication logic if required
+    }
+}
+```
+
+### Built-in Test Cases
+
+The base class includes ready-to-use test methods:
+
+- ✅ `shouldCreateEntity()` – Test POST /api/person
+- ✅ `shouldReturnEntityByGivenId()` – Test GET /api/person/{id}
+- ✅ `shouldReturnListOfEntities()` – Test GET /api/person
+- ✅ `shouldReturnListOfEntitiesWithFilter()` – Test RSQL queries
+- ✅ `shouldUpdateEntityByGivenId()` – Test PUT /api/person/{id}
+- ✅ `shouldDeleteEntityByGivenId()` – Test DELETE /api/person/{id}
+- ✅ `shouldReturnNotFoundEntityByGivenId()` – Test 404 responses
+- ✅ `shouldReturnNoContentWhenFilter()` – Test empty results
+
+### With JWT Authentication
+
+```java
+public class PersonControllerTest extends GenericRestAbstractIntegrationTests<Person, PersonServiceImpl> {
+    
+    public PersonControllerTest() {
+        super(new Person(), new TestProperties(
+            resourceUrl = "/api/person",
+            auth = true,
+            authHeaderName = "Authorization",
+            tokenType = "Bearer",
+            authToken = "your_jwt_token_here"
+        ));
+    }
+
+    @Override
+    public void authenticationManagement() throws Exception {
+        // Implement if you need to generate tokens dynamically
+    }
+}
+```
+
+---
+
+## 🛡️ Exception Handling
+
+The library provides comprehensive exception handling with `CustomRestExceptionHandler`.
+
+### Built-in Exception Handlers
+
+| HTTP Status | Exception Type | Description |
+|---|---|---|
+| 400 | `MethodArgumentNotValidException` | Validation errors |
+| 400 | `ConstraintViolationException` | Constraint violations |
+| 400 | `MissingServletRequestParameterException` | Missing query parameters |
+| 403 | `AccessDeniedException` | Access denied errors |
+| 404 | `ResourceNotFoundException` | Resource not found |
+| 404 | `NoHandlerFoundException` | Endpoint not found |
+| 405 | `HttpRequestMethodNotSupported` | Invalid HTTP method |
+| 409 | `DataAccessException` | Database conflicts |
+| 415 | `HttpMediaTypeNotSupportedException` | Unsupported media type |
+| 500 | `Exception` | Generic server errors |
+
+### Example Error Response
+
+```json
+{
+  "status": "BAD_REQUEST",
+  "message": "Validation failed",
+  "errors": [
+    "name: must not be null",
+    "docId: must be unique"
+  ]
+}
+```
+
+---
+
+## 🔗 HATEOAS Integration
+
+The library integrates with Spring HATEOAS to provide hypermedia links in API responses.
+
+### Enable HATEOAS
+
+Use `GenericModelAssemblerDto` for automatic link generation:
+
+```java
+@RestController
+@RequestMapping(FULL_API_URL_BASE_NAME + "/person")
+public class PersonRestControllerDto extends GenericRestControllerAbstractDto<Person, PersonDto, PersonServiceImplDto, UUID> {
+    public PersonRestControllerDto(PersonServiceImplDto serviceImpl) {
+        super(serviceImpl);
+    }
+}
+```
+
+### Example HATEOAS Response
+
+```json
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "name": "John Doe",
+  "dob": "1990-01-01",
+  "docId": "12345678900",
+  "_links": {
+    "self": {
+      "href": "http://localhost:8080/api/person/123e4567-e89b-12d3-a456-426614174000"
+    },
+    "person": {
+      "href": "http://localhost:8080/api/person"
+    }
+  }
+}
+```
+
+---
+
+## 📊 Entity Features at a Glance
+
+### Built-in Fields in `GenericEntity<ID>`
+
+Every entity automatically includes:
+
+```java
+- id (ID)                    // Primary key - Serializable type
+- resourceRef (String)       // UUID for unique resource identification
+- createdAt (Instant)        // Automatically set on creation
+- updatedAt (Instant)        // Automatically updated on modification
+- deletedAt (Instant)        // Set when entity is soft-deleted
+- deleted (Boolean)          // Soft delete flag
+- updatedBy (String)         // User who last updated the entity
+- deletedBy (String)         // User who deleted the entity
+```
 
 ---
 
@@ -389,7 +678,21 @@ Check out our [Pull Request template](.github/pull_request_template.md) and open
 [coverage-url]: https://app.codecov.io/github/mkosir/react-parallax-tilt/tree/main
 [issues-badge]: https://img.shields.io/github/issues/mkosir/react-parallax-tilt
 [issues-url]: https://github.com/mkosir/react-parallax-tilt/issues
-[semantic-badge]: https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg
+[semantic-badge]: https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9A%80-semantic--release-e10079.svg
 [semantic-url]: https://github.com/semantic-release/semantic-release
 [typescript-badge]: https://badges.frapsoft.com/typescript/code/typescript.svg?v=101
 [typescript-url]: https://github.com/microsoft/TypeScript
+
+---
+
+## 📋 Summary of Changes
+
+| Change | Details |
+|--------|---------|
+| **Version** | Updated from `0.4.3` → `0.4.32` |
+| **Features Section** | Added 8 new features with icons |
+| **New Sections** | 🔄 DTO Support, 📁 File Storage, 🧪 Test Support, 🛡️ Exception Handling, 🔗 HATEOAS, 📊 Entity Fields |
+| **GenericEntity Docs** | Added documentation for `resourceRef` and audit fields |
+| **Use Cases Expanded** | Added practical examples for all new features |
+| **Table Added** | Exception handling and built-in entity fields reference |
+

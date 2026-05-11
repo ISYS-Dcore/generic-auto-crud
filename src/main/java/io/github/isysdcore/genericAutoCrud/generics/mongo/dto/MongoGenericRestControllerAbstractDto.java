@@ -3,13 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.github.isysdcore.genericAutoCrud.generics.sql;
+package io.github.isysdcore.genericAutoCrud.generics.mongo.dto;
 
 
-import io.github.isysdcore.genericAutoCrud.ex.ResourceNotFoundException;
 import io.github.isysdcore.genericAutoCrud.generics.GenericEntity;
 import io.github.isysdcore.genericAutoCrud.generics.GenericModelAssembler;
 import io.github.isysdcore.genericAutoCrud.generics.GenericRestController;
+import io.github.isysdcore.genericAutoCrud.generics.dto.GenericDto;
+import io.github.isysdcore.genericAutoCrud.generics.dto.GenericModelAssemblerDto;
+import io.github.isysdcore.genericAutoCrud.generics.dto.GenericRestControllerDto;
 import io.github.isysdcore.genericAutoCrud.utils.Constants;
 import io.github.isysdcore.genericAutoCrud.utils.DefaultSearchParameters;
 import lombok.Getter;
@@ -21,43 +23,39 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
 
-/**
- *
- * @param <ENTITY> The Entity class that represent the database entity
- * @param <ID> The Class type that represent the id field datatype of entity of type ENTITY
- */
-
+/// MongoGenericRestControllerAbstract is an abstract class that provides a
 /// @author domingos.fernando
 /// @param <ENTITY> The Entity class that represent the database entity
 /// @param <SERVICE> The service Implementation that already modified by entity injection
 /// @param <ID> The Class type that represent the id field datatype of entity of type ENTITY
-public abstract class GenericRestControllerAbstract<
-        ENTITY extends GenericEntity<ID>,
-        SERVICE extends GenericRestServiceAbstract<
-                ENTITY,?,ID>, ID extends Serializable>
-        implements GenericRestController<ENTITY, ID> {
+/// @param <DTO> The DTO for Output ou response data
+public abstract class MongoGenericRestControllerAbstractDto<
+        ENTITY extends GenericEntity<ID>, 
+        DTO extends GenericDto<ID>,
+        SERVICE extends MongoGenericRestServiceAbstractDto<ENTITY, DTO,?, ?,ID>,
+        ID extends Serializable> implements GenericRestControllerDto<DTO, ID> {
 
     @Getter
     private final String RESOIRCE_NAME = "";
     @Getter
-    private final GenericModelAssembler<ENTITY> assembler;
+    private final GenericModelAssemblerDto<DTO> assembler;
     private final SERVICE serviceImpl;
     private ENTITY object;
 
-    public GenericRestControllerAbstract(SERVICE serviceImpl) {
-        this.assembler = new GenericModelAssembler<>( this);
+    public MongoGenericRestControllerAbstractDto(SERVICE serviceImpl) {
+        this.assembler = new GenericModelAssemblerDto<>( this);
         this.serviceImpl = serviceImpl;
     }
 
-    public GenericRestControllerAbstract(SERVICE serviceImpl, ENTITY entity) {
-        this.assembler = new GenericModelAssembler<>( this);
+    public MongoGenericRestControllerAbstractDto(SERVICE serviceImpl, ENTITY entity) {
+        this.assembler = new GenericModelAssemblerDto<>( this);
         this.serviceImpl = serviceImpl;
         this.object = entity;
     }
 
     @Override
     @GetMapping(value = RESOIRCE_NAME, params = {Constants.PAGE, Constants.SIZE, Constants.SORT})
-    public Page<ENTITY> findAll(@RequestParam(value = Constants.PAGE) int page,
+    public Page<DTO> findAll(@RequestParam(value = Constants.PAGE) int page,
                            @RequestParam(value = Constants.SIZE) int size,
                            @RequestParam(value = Constants.SORT) int sort) {
         try {
@@ -72,7 +70,7 @@ public abstract class GenericRestControllerAbstract<
     @GetMapping(value = RESOIRCE_NAME + Constants.RESOURCE_SEARCH,
             params = {Constants.PAGE, Constants.SIZE, Constants.SORT,
                     Constants.QUERY})
-    public Page<ENTITY> findByQuery(
+    public Page<DTO> findByQuery(
             @RequestParam(value = Constants.PAGE) int page,
             @RequestParam(value = Constants.SIZE) int size,
             @RequestParam(value = Constants.SORT) int sort,
@@ -87,9 +85,9 @@ public abstract class GenericRestControllerAbstract<
 
     @Override
     @GetMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
-    public ResponseEntity<EntityModel<ENTITY>> findById(@PathVariable(name = "id") ID id) {
+    public ResponseEntity<EntityModel<DTO>> findById(@PathVariable(name = "id") ID id) {
         try{
-            ENTITY entity = serviceImpl.findById(id);
+            DTO entity = serviceImpl.findById(id);
             return ResponseEntity.ok(assembler.toModel(entity));
         }catch (Exception e){
             throw e;
@@ -98,10 +96,10 @@ public abstract class GenericRestControllerAbstract<
 
     @Override
     @PostMapping(RESOIRCE_NAME)
-    public ResponseEntity<?> create(@RequestBody ENTITY newEntity) {
+    public ResponseEntity<?> create(@RequestBody DTO newEntity) {
         try{
-            ENTITY saved = serviceImpl.save(newEntity);
-            EntityModel<ENTITY> entityModel = assembler.toModel(saved);
+            DTO saved = serviceImpl.save(newEntity);
+            EntityModel<DTO> entityModel = assembler.toModel(saved);
             return ResponseEntity //
                     .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
                     .body(entityModel);
@@ -112,10 +110,10 @@ public abstract class GenericRestControllerAbstract<
 
     @Override
     @PutMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
-    public ResponseEntity<?> update(@PathVariable(name = "id") ID id, @RequestBody ENTITY newEntity) {
+    public ResponseEntity<?> update(@PathVariable(name = "id") ID id, @RequestBody DTO newEntity) {
 
         try{
-            EntityModel<ENTITY> entityModel = assembler.toModel(serviceImpl.update(id, newEntity));
+            EntityModel<DTO> entityModel = assembler.toModel(serviceImpl.update(id, newEntity));
             return ResponseEntity //
                     .ok(entityModel);
         }catch (Exception e){
@@ -128,7 +126,7 @@ public abstract class GenericRestControllerAbstract<
     @DeleteMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
     public ResponseEntity<?> delete(@PathVariable(name = "id") ID id) {
         try{
-            EntityModel<ENTITY> entityModel = assembler.toModel(serviceImpl.delete(id));
+            EntityModel<DTO> entityModel = assembler.toModel(serviceImpl.delete(id));
             return ResponseEntity //
                     .noContent()
                     .build();

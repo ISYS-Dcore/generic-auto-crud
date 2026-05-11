@@ -16,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -31,6 +32,7 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import jakarta.security.enterprise.AuthenticationException;
 import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
@@ -135,15 +137,24 @@ public abstract class CustomRestExceptionHandler extends ResponseEntityException
     //403
     @ExceptionHandler({AccessDeniedException.class})
     public ResponseEntity<Object> handleAccessDeniedException(final Exception ex, final WebRequest request) {
-        System.out.println("request" + request.getUserPrincipal());
+        log.info("request: {}", request.getUserPrincipal());
         final String error = "Access Denied for " + ex.getLocalizedMessage();
         final ApiError apiError = new ApiError(HttpStatus.FORBIDDEN, ex.getLocalizedMessage(), error, "Access Denied");
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
+    //401
+    @ExceptionHandler({AuthenticationException.class, BadCredentialsException.class})
+    public ResponseEntity<Object> handleAuthenticationException(final Exception ex, final WebRequest request) {
+        log.info("request: {}", request.getUserPrincipal());
+        final String error = "Authentication Failed for: " + ex.getLocalizedMessage();
+        final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, ex.getLocalizedMessage(), error, "Authentication Failed");
+        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
     @ExceptionHandler({ResourceNotFoundException.class})
     public ResponseEntity<Object> resourceNotFoundException(final Exception ex, final WebRequest request) {
-        System.out.println("request" + request.getUserPrincipal());
+        log.info("request: {}" , request.getUserPrincipal());
         final String error = "Resource not found " + ex.getLocalizedMessage();
         final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ex.getLocalizedMessage(), error, "Not Found ");
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -161,7 +172,6 @@ public abstract class CustomRestExceptionHandler extends ResponseEntityException
     }
 
     // 405
-
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(final HttpRequestMethodNotSupportedException ex, final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
         log.info(ex.getClass().getName());
         //
@@ -183,7 +193,6 @@ public abstract class CustomRestExceptionHandler extends ResponseEntityException
     }
 
     // 415
-
     protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(final HttpMediaTypeNotSupportedException ex, final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
         log.info(ex.getClass().getName());
         //
@@ -207,7 +216,9 @@ public abstract class CustomRestExceptionHandler extends ResponseEntityException
     }
 
     public static Throwable findCauseUsingPlainJava(Throwable throwable) {
-        Objects.requireNonNull(throwable);
+        if (throwable == null) {
+            return new Throwable("Null throwable, Unknown Cause");
+        }
         Throwable rootCause = throwable;
         while (rootCause.getCause() != null && rootCause.getCause() != rootCause) {
             rootCause = rootCause.getCause();
