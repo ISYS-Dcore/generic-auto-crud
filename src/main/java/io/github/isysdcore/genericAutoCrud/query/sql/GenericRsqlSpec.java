@@ -35,9 +35,20 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-/// @author domingos.fernando
-/// @param <T> Entity type that this specification will be applied to
-/// This class implements a generic RSQL specification for JPA queries.
+/**
+ * Generic JPA Specification implementation for RSQL-based filtering.
+ *
+ * <p>This class provides a reusable implementation of Spring Data JPA
+ * {@link org.springframework.data.jpa.domain.Specification} that translates
+ * RSQL query expressions into JPA Criteria API predicates.</p>
+ *
+ * <p>It is designed to support dynamic filtering, enabling flexible query
+ * construction based on runtime RSQL input.</p>
+ *
+ * @param <T> the entity type to which this specification is applied
+ *
+ * @author domingos.fernando
+ */
 @AllArgsConstructor
 @Slf4j
 public class GenericRsqlSpec<T> implements Specification<T> {

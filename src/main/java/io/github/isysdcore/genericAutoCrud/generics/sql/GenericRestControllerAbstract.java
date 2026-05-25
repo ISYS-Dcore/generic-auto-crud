@@ -22,15 +22,22 @@ import org.springframework.web.bind.annotation.*;
 import java.io.Serializable;
 
 /**
+ * Abstract base REST controller providing generic CRUD endpoints for entity-based APIs for SQL Databases.
  *
- * @param <ENTITY> The Entity class that represent the database entity
- * @param <ID> The Class type that represent the id field datatype of entity of type ENTITY
+ * <p>This class defines a reusable REST controller layer that delegates business logic
+ * to a service implementation, enabling consistent CRUD operations across all entities
+ * without requiring repetitive controller code.</p>
+ *
+ * <p>It is designed for entity-based APIs where entities are exposed directly (not DTOs),
+ * and acts as a standard foundation for REST controllers in the application.</p>
+ *
+ * @param <ENTITY> the entity type representing the database model
+ * @param <SERVICE> the service implementation responsible for business logic and persistence
+ *                  operations for the given entity
+ * @param <ID> the identifier type of the entity, must be {@link java.io.Serializable}
+ *
+ * @author domingos.fernando
  */
-
-/// @author domingos.fernando
-/// @param <ENTITY> The Entity class that represent the database entity
-/// @param <SERVICE> The service Implementation that already modified by entity injection
-/// @param <ID> The Class type that represent the id field datatype of entity of type ENTITY
 public abstract class GenericRestControllerAbstract<
         ENTITY extends GenericEntity<ID>,
         SERVICE extends GenericRestServiceAbstract<

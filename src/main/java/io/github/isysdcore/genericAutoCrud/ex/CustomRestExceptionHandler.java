@@ -37,10 +37,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/// CustomRestExceptionHandler is a class that handles exceptions thrown by
-/// Spring MVC controllers.
-/// It extends ResponseEntityExceptionHandler to provide custom error responses
-/// @author domingos.fernando
+/**
+* CustomRestExceptionHandler is a class that handles exceptions thrown by
+* Spring MVC controllers.
+* It extends ResponseEntityExceptionHandler to provide custom error responses
+* @author domingos.fernando
+**/
 @Slf4j
 public abstract class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -55,7 +57,7 @@ public abstract class CustomRestExceptionHandler extends ResponseEntityException
             errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
         }
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors);
-        return handleExceptionInternal(ex, apiError, headers, apiError.getStatus(), request);
+        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
 
@@ -69,7 +71,7 @@ public abstract class CustomRestExceptionHandler extends ResponseEntityException
             errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
         }
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors);
-        return handleExceptionInternal(ex, apiError, headers, apiError.getStatus(), request);
+        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
 

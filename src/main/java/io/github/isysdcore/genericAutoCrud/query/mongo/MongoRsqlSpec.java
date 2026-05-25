@@ -8,10 +8,20 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-/// @author domingos.fernando
-/// @param <T> The Entity class that represents the MongoDB entity
-/// This class is responsible for converting RSQL specifications into MongoDB Criteria.
-/// It handles various comparison operators and argument types, converting them into appropriate MongoDB queries.
+/**
+ * Converter that transforms RSQL specifications into MongoDB {@link org.springframework.data.mongodb.core.query.Criteria}.
+ *
+ * <p>This class is responsible for parsing and translating RSQL queries into
+ * MongoDB-compatible criteria expressions. It supports multiple comparison
+ * operators and argument types, enabling dynamic query construction at runtime.</p>
+ *
+ * <p>It is commonly used in filtering layers where client-provided RSQL queries
+ * must be converted into MongoDB query criteria.</p>
+ *
+ * @param <T> the entity type representing the MongoDB document
+ *
+ * @author domingos.fernando
+ */
 public class MongoRsqlSpec<T> {
 
     private final String property;

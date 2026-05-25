@@ -12,9 +12,20 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-/// @author domingos.fernando
-/// @param <T> The entity type for which the specification is created
-/// This class is responsible for building a JPA Specification from an RSQL query.
+/**
+ * Builder that constructs JPA {@link org.springframework.data.jpa.domain.Specification}
+ * instances from RSQL query expressions.
+ *
+ * <p>This class parses RSQL nodes and translates them into JPA Criteria-based
+ * predicates, enabling dynamic query generation at runtime.</p>
+ *
+ * <p>It is typically used in filtering layers where client-provided RSQL
+ * queries are converted into executable JPA Specifications.</p>
+ *
+ * @param <T> the entity type for which the specification is created
+ *
+ * @author domingos.fernando
+ */
 public class GenericRsqlSpecBuilder<T>
 {
 

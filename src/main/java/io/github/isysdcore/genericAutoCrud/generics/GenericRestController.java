@@ -11,10 +11,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 /**
+ * Generic REST controller contract defining standard CRUD operations for a Spring Boot application.
+ *
+ * <p>This interface provides a reusable abstraction for building RESTful APIs across different
+ * entity types, enforcing a consistent structure for Create, Read, Update, and Delete operations.</p>
+ *
+ * <p>It is intended to be implemented or extended by concrete controllers in order to reduce
+ * boilerplate code and standardize API behavior across the application.</p>
+ *
+ * @param <ENTITY> the entity type representing the database model
+ * @param <ID> the identifier type of the entity
  *
  * @author domingos.fernando
- * @param <ENTITY> The Entity class that represent the database entity
- * @param <ID> The Class type that represent the id field datatype of entity of type T
  */
 public interface GenericRestController<ENTITY, ID> {
 

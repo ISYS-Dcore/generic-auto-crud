@@ -6,10 +6,19 @@ import cz.jirutka.rsql.parser.ast.OrNode;
 import cz.jirutka.rsql.parser.ast.RSQLVisitor;
 import org.springframework.data.mongodb.core.query.Criteria;
 
-/// @author domingos.fernando
-/// @param <T> The Entity class that represents the MongoDB entity
-/// This class implements a custom RSQL visitor that builds MongoDB Criteria
-/// from RSQL query nodes. It uses a MongoRsqlSpecBuilder to create the criteria
+/**
+ * Custom RSQL visitor that converts RSQL query nodes into MongoDB {@link org.springframework.data.mongodb.core.query.Criteria}.
+ *
+ * <p>This visitor traverses the RSQL abstract syntax tree and delegates the
+ * construction of MongoDB query criteria to {@link MongoRsqlSpecBuilder}.</p>
+ *
+ * <p>It supports logical (AND, OR) and comparison operations, enabling the
+ * translation of RSQL expressions into executable MongoDB queries.</p>
+ *
+ * @param <T> the entity type representing the MongoDB document
+ *
+ * @author domingos.fernando
+ */
 public class MongoRsqlVisitor<T> implements RSQLVisitor<Criteria, Void> {
 
     private final MongoRsqlSpecBuilder<T> builder;

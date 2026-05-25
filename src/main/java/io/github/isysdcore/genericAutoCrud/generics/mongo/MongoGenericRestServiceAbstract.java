@@ -35,11 +35,19 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-/// @author domingos.fernando
-/// @param <ENTITY> The Entity class that represent the database entity
-/// @param <REPOSITORY> The generic Repository modified by entity and id datatype injected
-/// @param <ID> The Class type that represent the id field datatype of entity of type ENTITY
+/**
+ * Abstract base service for MongoDB entities.
+ *
+ * <p>This class provides a generic implementation of common REST service operations,
+ * delegating data access to a repository layer and providing standardized
+ * business logic for MongoDB-based applications.</p>
+ *
+ * @param <ENTITY> the entity type representing the MongoDB document
+ * @param <REPOSITORY> the repository implementation responsible for data access
+ * @param <ID> the identifier type of the entity
+ *
+ * @author domingos.fernando
+ */
 @RequiredArgsConstructor
 public abstract class MongoGenericRestServiceAbstract<ENTITY extends GenericEntity<ID>, REPOSITORY extends MongoGenericRepository<ENTITY,ID>, ID extends Serializable>{
 

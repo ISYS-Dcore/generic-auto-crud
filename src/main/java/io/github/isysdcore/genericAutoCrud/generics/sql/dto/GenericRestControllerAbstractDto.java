@@ -22,15 +22,25 @@ import org.springframework.web.bind.annotation.*;
 import java.io.Serializable;
 
 /**
+ * Abstract base implementation of a DTO-based REST controller using SQL Database.
  *
- * @param <ENTITY> The Entity class that represent the database entity
- * @param <ID> The Class type that represent the id field datatype of entity of type ENTITY
+ * <p>This class provides a generic foundation for building RESTful APIs that
+ * operate on Data Transfer Objects (DTOs) instead of exposing persistence
+ * entities directly. It delegates business logic to a service layer and
+ * enforces consistent CRUD behavior across all DTO-driven controllers.</p>
+ *
+ * <p>The controller is designed to work with a generic service abstraction
+ * that handles mapping between entities and DTOs, as well as persistence
+ * operations.</p>
+ *
+ * @param <ENTITY> the entity type, extending {@link GenericEntity}
+ * @param <DTO> the DTO type, extending {@link GenericDto}
+ * @param <SERVICE> the service layer implementation responsible for handling
+ *                  business logic and entity/DTO conversion
+ * @param <ID> the identifier type of the entity, must be {@link java.io.Serializable}
+ *
+ * @author domingos.fernando
  */
-
-/// @author domingos.fernando
-/// @param <ENTITY> The Entity class that represent the database entity
-/// @param <SERVICE> The service Implementation that already modified by entity injection
-/// @param <ID> The Class type that represent the id field datatype of entity of type ENTITY
 public abstract class GenericRestControllerAbstractDto<
         ENTITY extends GenericEntity<ID>,
         DTO extends GenericDto<ID>,

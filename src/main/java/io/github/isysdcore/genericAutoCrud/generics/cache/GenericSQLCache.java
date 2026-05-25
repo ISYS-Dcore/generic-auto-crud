@@ -14,19 +14,41 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-/// Generic class to cache database entities in memory
-/// @Warning Use this with caution because load too much information to memory can cause error and other issues
-/// @param <ID> Entity id data type
-/// @param <ENTITY> Entity type
-/// @param <SERVICE> The service that provide entity operations
-/// @code Example:
-///  GenericCache<String, MyEntity, MyService> cache =
-///  new GenericCache<>(myService);
-///  // Add multiple indexes
-///  cache.addSecondaryIndex("byName", e -> e.getName());
-///  cache.addSecondaryIndex("byNameAndType", e -> Arrays.asList(e.getName(), e.getType()));
-///  // Now you can query in O(1)
-///  List<MyEntity> list = cache.getByIndex("byNameAndType", Arrays.asList("John", "Admin"));
+/**
+ * Generic in-memory cache for database entities.
+ *
+ * <p><strong>Warning:</strong> Use this class with caution. Loading large
+ * amounts of data into memory may increase memory usage and can lead to
+ * performance issues or {@link OutOfMemoryError} exceptions.</p>
+ *
+ * @param <ID> the entity identifier type
+ * @param <ENTITY> the entity type being cached
+ * @param <SERVICE> the service responsible for entity operations
+ *
+ * <p>Example usage:</p>
+ *
+ * <pre>{@code
+ * GenericCache<String, MyEntity, MyService> cache =
+ *         new GenericCache<>(myService);
+ *
+ * // Add multiple indexes
+ * cache.addSecondaryIndex("byName", e -> e.getName());
+ * cache.addSecondaryIndex(
+ *         "byNameAndType",
+ *         e -> Arrays.asList(e.getName(), e.getType())
+ * );
+ *
+ * // Query entities using a secondary index
+ * List<MyEntity> list =
+ *         cache.getByIndex(
+ *                 "byNameAndType",
+ *                 Arrays.asList("John", "Admin")
+ *         );
+ * }</pre>
+ *
+ * @author domingos.fernando
+ * @since 0.1.0
+ */
 public class GenericSQLCache<ID extends Serializable, ENTITY extends GenericEntity<ID>, SERVICE extends GenericRestServiceAbstract<ENTITY,?,?>> {
 
     private final SERVICE entityService;

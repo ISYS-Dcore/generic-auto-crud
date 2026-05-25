@@ -9,6 +9,12 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
+/**
+ * Auditable Aspect class to help audit your application.
+ * It intercepts methods annotated with @Auditable and logs the action, step,
+ * entity, and entityId along with the actor performing the action.
+ * The actor is retrieved from the AuditContext, which should be set up to provide the current
+ */
 @Slf4j
 @Aspect
 @Component

@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -105,7 +106,7 @@ public class ApiError
         this.status = status;
         this.message = message;
         this.details = error;
-        errors = Arrays.asList(error);
+        errors = Collections.singletonList(error);
     }
 
     /**
@@ -123,7 +124,7 @@ public class ApiError
         this.message = message;
         this.details = error;
         this.objects = objects;
-        errors = Arrays.asList(error);
+        errors = Collections.singletonList(error);
     }
 
     /**
@@ -141,7 +142,7 @@ public class ApiError
         this.message = message;
         this.ex = ex;
         processDetails(ex);
-        errors = Arrays.asList(error);
+        errors = Collections.singletonList(error);
     }
 
     /**
@@ -150,7 +151,7 @@ public class ApiError
      */
     private void processDetails(String content)
     {
-        this.details = content.substring(content.indexOf("Detail:") + 7, content.length());
+        this.details = content.substring(content.indexOf("Detail:") + 7, content.indexOf(" at ")).trim();
     }
 
 }

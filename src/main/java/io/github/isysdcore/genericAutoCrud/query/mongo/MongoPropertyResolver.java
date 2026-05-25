@@ -9,9 +9,17 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-/// @author domingos.fernando
-/// This class is responsible for resolving the type of a property in a MongoDB entity
-/// given the entity class and the property path. It uses the MongoMappingContext
+/**
+ * Utility responsible for resolving property types in MongoDB entity mappings.
+ *
+ * <p>This class determines the Java type of a given property path within a
+ * MongoDB entity by leveraging Spring Data MongoDB's {@link org.springframework.data.mongodb.core.mapping.MongoMappingContext}.</p>
+ *
+ * <p>It is typically used in dynamic query generation, reflection-based mapping,
+ * or framework-level metadata inspection where property type resolution is required.</p>
+ *
+ * @author domingos.fernando
+ */
 @Component
 @RequiredArgsConstructor
 public class MongoPropertyResolver {

@@ -1,6 +1,9 @@
 package io.github.isysdcore.genericAutoCrud.utils;
 
 
+/**
+ * Audit context class
+ */
 public class AuditContext {
     private static final ThreadLocal<String> currentActor = new ThreadLocal<>();
 

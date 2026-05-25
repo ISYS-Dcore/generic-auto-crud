@@ -13,19 +13,58 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-/// Generic class to cache database entities in memory
-/// @Warning Use this with caution because load too much information to memory can cause error and other issues
-/// @param <ID> Entity id data type
-/// @param <ENTITY> Entity type
-/// @param <SERVICE> The service that provide entity operations
-/// @code Example:
-///  GenericCache<String, MyEntity, MyService> cache =
-///  new GenericCache<>(myService);
-///  // Add multiple indexes
-///  cache.addSecondaryIndex("byName", e -> e.getName());
-///  cache.addSecondaryIndex("byNameAndType", e -> Arrays.asList(e.getName(), e.getType()));
-///  // Now you can query in O(1)
-///  List<MyEntity> list = cache.getByIndex("byNameAndType", Arrays.asList("John", "Admin"));
+/**
+ * Generic in-memory cache for database entities.
+ *
+ * <p>
+ * This cache loads entities from the data source and stores them in memory
+ * to provide fast lookups. In addition to primary key access, custom
+ * secondary indexes can be created to support constant-time lookups by
+ * arbitrary entity attributes.
+ * </p>
+ *
+ * <p><strong>Warning:</strong> Use this class with caution. Caching large
+ * datasets may significantly increase memory consumption and can lead to
+ * performance degradation or {@link OutOfMemoryError} exceptions.
+ * Consider using it only when the dataset size is predictable and fits
+ * comfortably in available memory.
+ * </p>
+ *
+ * @param <ID> the entity identifier type
+ * @param <ENTITY> the entity type being cached
+ * @param <SERVICE> the service type responsible for entity operations
+ *
+ * <h2>Example</h2>
+ *
+ * <pre>{@code
+ * GenericCache<String, MyEntity, MyService> cache =
+ *         new GenericCache<>(myService);
+ *
+ * // Add secondary indexes
+ * cache.addSecondaryIndex("byName", MyEntity::getName);
+ *
+ * cache.addSecondaryIndex(
+ *         "byNameAndType",
+ *         e -> Arrays.asList(e.getName(), e.getType())
+ * );
+ *
+ * // Query entities using a secondary index
+ * List<MyEntity> users =
+ *         cache.getByIndex(
+ *                 "byNameAndType",
+ *                 Arrays.asList("John", "Admin")
+ *         );
+ * }</pre>
+ *
+ * <p>
+ * Secondary indexes map a key derived from an entity to one or more cached
+ * entities. Once an index is created, lookups using that index are typically
+ * performed in constant time.
+ * </p>
+ *
+ * @author Domingos Fernando
+ * @since 1.0
+ */
 public class GenericMongoCache<ID extends Serializable, ENTITY extends GenericEntity<ID>, SERVICE extends MongoGenericRestServiceAbstract<ENTITY,?,?>> {
 
     private final SERVICE entityService;

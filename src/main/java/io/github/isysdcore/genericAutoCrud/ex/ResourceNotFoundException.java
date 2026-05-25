@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
+ * Custom Resource Not Found Exception
  * @author domingos.fernando
  */
 @ResponseStatus(HttpStatus.NOT_FOUND)

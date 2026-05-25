@@ -6,6 +6,11 @@ import lombok.Data;
 
 import java.time.Instant;
 
+/**
+ * Audit log data model representing an audit entry in the system. It captures details about actions performed,
+ * including the actor, action type, step, target entity, and additional details.
+ * This model can be persisted to an "audit_log" table in the database for tracking and auditing purposes.
+ */
 @Data
 @Table(schema = "audit_log")
 public class AuditLog {

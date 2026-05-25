@@ -4,9 +4,8 @@
 
   <groupId>io.github.isys-dcore</groupId>
   <artifactId>generic-auto-crud</artifactId>
-  <version>0.5.0</version>
+  <version>0.5.7</version>
 <!--  <packaging>jar</packaging>-->
-
   <name>generic-auto-crud</name>
   <url>https://github.com/ISYS-Dcore/generic-auto-crud</url>
   <description>
@@ -17,8 +16,9 @@
 
   <licenses>
     <license>
-      <name>The Apache License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        <name>The Apache License, Version 2.0</name>
+        <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        <distribution>repo</distribution>
     </license>
   </licenses>
 
@@ -35,6 +35,7 @@
     <connection>scm:git:git@github.com:ISYS-Dcore/generic-auto-crud.git</connection>
     <developerConnection>scm:git@github.com:ISYS-Dcore/generic-auto-crud.git</developerConnection>
     <url>https://github.com/ISYS-Dcore/generic-auto-crud/tree/main</url>
+    <tag>generic-auto-crud:v${project.version}</tag>
   </scm>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -47,6 +48,7 @@
     <rsql-parser.version>2.1.0</rsql-parser.version>
     <apache-tomcat.version>11.0.21</apache-tomcat.version>
     <apache-commons.version>1.14.1</apache-commons.version>
+    <json-smart.version>2.5.2</json-smart.version>
   </properties>
 
   <dependencies>
@@ -80,12 +82,12 @@
     <dependency>
       <groupId>org.springframework.hateoas</groupId>
       <artifactId>spring-hateoas</artifactId>
-      <version>2.4.1</version>
+      <version>2.5.1</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-test</artifactId>
-      <version>3.4.4</version>
+      <version>3.5.14</version>
       <scope>test</scope>
     </dependency>
     <!-- END of Spring Framework dependencies-->
@@ -165,7 +167,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.19.2</version>
+      <version>2.21.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>

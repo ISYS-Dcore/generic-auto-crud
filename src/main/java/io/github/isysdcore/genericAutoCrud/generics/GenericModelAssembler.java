@@ -19,11 +19,25 @@ import java.util.logging.Logger;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-/// This class is a generic model assembler that converts an entity of type ENTITY
-/// into an EntityModel<ENTITY>. It uses reflection to get the ID of the entity and
-/// creates links for self and collection retrieval.
-/// @author domingos.fernando
-/// @param <ENTITY> The Entity class that represent the database entity
+/**
+ * Generic HATEOAS model assembler that converts entities into
+ * {@link org.springframework.hateoas.EntityModel EntityModel} representations.
+ *
+ * <p>This assembler uses reflection to extract the entity identifier and
+ * automatically builds hypermedia links, including:</p>
+ * <ul>
+ *   <li>Self link for the individual resource</li>
+ *   <li>Collection link for retrieving all resources of the same type</li>
+ * </ul>
+ *
+ * <p>It is designed to reduce boilerplate in REST APIs by providing a
+ * reusable mechanism for wrapping entities with HATEOAS-compliant
+ * representations.</p>
+ *
+ * @param <ENTITY> the entity type representing the database model
+ *
+ * @author domingos.fernando
+ */
 public class GenericModelAssembler<ENTITY> implements RepresentationModelAssembler<ENTITY, EntityModel<ENTITY>> {
 
     GenericRestController<ENTITY, ?> controllerClass;

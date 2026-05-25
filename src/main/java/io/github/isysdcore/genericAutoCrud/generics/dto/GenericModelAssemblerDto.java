@@ -20,11 +20,20 @@ import java.util.logging.Logger;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-/// This class is a generic model assembler that converts an entity of type T
-/// into an EntityModel<T>. It uses reflection to get the ID of the entity and
-/// creates links for self and collection retrieval.
-/// @author domingos.fernando
-/// @param <DTO> The Entity class that represent the database entity or DTO
+/**
+ * Generic HATEOAS model assembler that converts objects into
+ * {@link org.springframework.hateoas.EntityModel EntityModel} representations.
+ *
+ * <p>This implementation uses reflection to obtain the object's identifier
+ * and automatically generates hypermedia links such as self and collection
+ * links.</p>
+ *
+ * <p>The assembler is designed to work with entities or Data Transfer Objects
+ * (DTOs), reducing the need for dedicated assemblers for each resource type.</p>
+ *
+ * @param <DTO> the entity or DTO type to be converted into an {@code EntityModel}
+ * @author Domingos Fernando
+ */
 public class GenericModelAssemblerDto<DTO> implements RepresentationModelAssembler<DTO, EntityModel<DTO>> {
 
     GenericRestControllerDto<DTO, ?> controllerClass;

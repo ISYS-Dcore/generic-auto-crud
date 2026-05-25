@@ -23,12 +23,27 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
 
-/// MongoGenericRestControllerAbstract is an abstract class that provides a
-/// @author domingos.fernando
-/// @param <ENTITY> The Entity class that represent the database entity
-/// @param <SERVICE> The service Implementation that already modified by entity injection
-/// @param <ID> The Class type that represent the id field datatype of entity of type ENTITY
-/// @param <DTO> The DTO for Output ou response data
+/**
+ * Abstract REST controller for MongoDB-based entities that provides
+ * standard CRUD endpoints and integrates with a generic service layer.
+ *
+ * <p>This controller serves as a base implementation for REST resources,
+ * delegating business operations to a service component and handling the
+ * conversion between entities and Data Transfer Objects (DTOs).</p>
+ *
+ * <p>Implementations typically extend this class to expose CRUD operations
+ * for a specific resource while reusing the common controller behavior
+ * provided by the framework.</p>
+ *
+ * @param <ENTITY> the entity type representing the MongoDB document
+ * @param <SERVICE> the service implementation responsible for business and
+ *                  persistence operations on {@code ENTITY}
+ * @param <ID> the identifier type used by {@code ENTITY}
+ * @param <DTO> the Data Transfer Object (DTO) type used for request and
+ *              response payloads
+ *
+ * @author Domingos Fernando
+ */
 public abstract class MongoGenericRestControllerAbstractDto<
         ENTITY extends GenericEntity<ID>, 
         DTO extends GenericDto<ID>,

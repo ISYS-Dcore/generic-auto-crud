@@ -10,10 +10,22 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-/// @author domingos.fernando
-/// @param <T> The Entity class that represents the MongoDB entity
-/// This class is responsible for building MongoDB Criteria from RSQL query nodes.
-/// It handles logical operations (AND, OR) and comparison operations, converting them into appropriate Mongo
+/**
+ * Builder that constructs MongoDB {@link org.springframework.data.mongodb.core.query.Criteria}
+ * from RSQL query nodes.
+ *
+ * <p>This class processes RSQL abstract syntax trees and converts them into
+ * equivalent MongoDB query criteria. It supports logical operations such as
+ * AND / OR as well as comparison operators, enabling flexible dynamic query
+ * generation.</p>
+ *
+ * <p>It is typically used as part of a filtering or search infrastructure where
+ * client-provided RSQL expressions are translated into MongoDB queries.</p>
+ *
+ * @param <T> the entity type representing the MongoDB document
+ *
+ * @author domingos.fernando
+ */
 public class MongoRsqlSpecBuilder<T> {
 
     private final Class<T> entityClass;

@@ -26,10 +26,24 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/// @author domingos.fernando
-/// @param <ENTITY> The Entity class that represent the database entity
-/// @param <ID> The Class type that represent the id field datatype of entity of type ENTITY
-/// @param <REPOSITORY> The generic Repository modified by entity and id datatype injected
+/**
+ * Abstract service layer providing generic CRUD operations for entities for SQL Databases.
+ *
+ * <p>This class implements a reusable service abstraction that encapsulates
+ * business logic and persistence operations, delegating data access to a
+ * generic repository layer.</p>
+ *
+ * <p>It is intended to be extended by concrete service implementations in order
+ * to reduce boilerplate code and enforce consistent service behavior across
+ * all entity types.</p>
+ *
+ * @param <ENTITY> the entity type representing the database model
+ * @param <REPOSITORY> the repository responsible for persistence operations
+ *                     on the given entity
+ * @param <ID> the identifier type of the entity, must be {@link java.io.Serializable}
+ *
+ * @author domingos.fernando
+ */
 public abstract class GenericRestServiceAbstract<
         ENTITY extends GenericEntity<ID>, 
         REPOSITORY extends GenericRepository<ENTITY,ID>, 

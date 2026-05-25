@@ -10,7 +10,7 @@ import java.time.Instant;
 
 /**
  *
- * Auditlog Automátic spring security usage
+ * Audit log Automátic spring security usage
  * /@Component
  * public class AuditContextFilter extends OncePerRequestFilter {
  *     //@Override

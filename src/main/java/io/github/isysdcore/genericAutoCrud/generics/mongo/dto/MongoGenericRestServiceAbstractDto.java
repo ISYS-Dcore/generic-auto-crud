@@ -34,11 +34,16 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/// @author domingos.fernando
-/// @param <ENTITY> The Entity class that represent the database entity
-/// @param <DTO> The Entity class that represent Output DTO
-/// @param <REPOSITORY> The generic Repository modified by entity and id datatype injected
-/// @param <ID> The Class type that represent the id field datatype of entity of type ENTITY
+/**
+* This abstract class provide a Generic Rest Api operations using GeneticRepository and GenericDTOMapper for MongoDB entities.
+* @author domingos.fernando
+* @param <ENTITY> The Entity class that represent the database entity
+* @param <DTO> The Entity class that represent Output DTO
+* @param <REPOSITORY> The generic Repository modified by entity and id datatype injected
+* @param <ID> The Class type that represent the id field datatype of entity of type ENTITY
+*
+* */
+
 @RequiredArgsConstructor
 @Transactional
 public abstract class MongoGenericRestServiceAbstractDto<

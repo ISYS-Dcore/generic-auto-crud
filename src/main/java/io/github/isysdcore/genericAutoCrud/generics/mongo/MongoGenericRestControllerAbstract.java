@@ -21,11 +21,23 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
 
-/// MongoGenericRestControllerAbstract is an abstract class that provides a
-/// @author domingos.fernando
-/// @param <ENTITY> The Entity class that represent the database entity
-/// @param <SERVICE> The service Implementation that already modified by entity injection
-/// @param <ID> The Class type that represent the id field datatype of entity of type ENTITY
+/**
+ * Abstract base REST controller for MongoDB entities.
+ *
+ * <p>This class provides a generic implementation of common REST operations,
+ * delegating business logic to a service layer and exposing standardized
+ * endpoints for CRUD functionality.</p>
+ *
+ * <p>It is designed to be extended by concrete controllers to reduce boilerplate
+ * and enforce consistency across MongoDB-based REST APIs.</p>
+ *
+ * @param <ENTITY> the entity type representing the MongoDB document
+ * @param <SERVICE> the service implementation responsible for business logic
+ *                  and persistence operations
+ * @param <ID> the identifier type of the entity
+ *
+ * @author domingos.fernando
+ */
 public abstract class MongoGenericRestControllerAbstract<ENTITY extends GenericEntity<ID>, SERVICE extends MongoGenericRestServiceAbstract<ENTITY,?,ID>, ID extends Serializable> implements GenericRestController<ENTITY, ID> {
 
     @Getter

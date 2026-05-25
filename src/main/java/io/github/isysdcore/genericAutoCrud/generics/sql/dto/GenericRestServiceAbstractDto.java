@@ -28,11 +28,23 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/// @author domingos.fernando
-/// @param <ENTITY> The Entity class that represent the database entity
-/// @param <DTO> The Entity class that represent Output DTO
-/// @param <REPOSITORY> The generic Repository modified by entity and id datatype injected
-/// @param <ID> The Class type that represent the id field datatype of entity of type ENTITY
+/**
+ * Abstract service layer implementation for DTO-based REST applications using SQL Database.
+ *
+ * <p>This class provides a generic foundation for business logic and persistence
+ * operations, bridging the gap between repository access and DTO-based API exposure.</p>
+ *
+ * <p>It handles coordination between the repository layer and the DTO mapper,
+ * ensuring consistent transformation between entities and DTOs across all services.</p>
+ *
+ * @param <ENTITY> the entity type representing the database model
+ * @param <DTO> the Data Transfer Object type used in API communication
+ * @param <REPOSITORY> the repository interface responsible for persistence operations
+ * @param <MAPPER> the mapper responsible for converting between {@code ENTITY} and {@code DTO}
+ * @param <ID> the identifier type of the entity, must be {@link java.io.Serializable}
+ *
+ * @author domingos.fernando
+ */
 public abstract class GenericRestServiceAbstractDto<
         ENTITY extends GenericEntity<ID>,
         DTO extends GenericDto<ID>,
