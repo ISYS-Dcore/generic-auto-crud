@@ -4,7 +4,7 @@
 
   <groupId>io.github.isys-dcore</groupId>
   <artifactId>generic-auto-crud</artifactId>
-  <version>0.5.7</version>
+  <version>0.5.9</version>
 <!--  <packaging>jar</packaging>-->
   <name>generic-auto-crud</name>
   <url>https://github.com/ISYS-Dcore/generic-auto-crud</url>
@@ -43,6 +43,7 @@
     <maven.compiler.target>17</maven.compiler.target>
     <junit.version>4.13.2</junit.version>
     <jakarta.version>3.1.0</jakarta.version>
+    <jakarta.security.version>4.0.0</jakarta.security.version>
     <lombok.version>1.18.30</lombok.version>
     <hibernate.version>6.4.4.Final</hibernate.version>
     <rsql-parser.version>2.1.0</rsql-parser.version>
@@ -129,6 +130,11 @@
       <groupId>jakarta.persistence</groupId>
       <artifactId>jakarta.persistence-api</artifactId>
       <version>${jakarta.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.security.enterprise</groupId>
+      <artifactId>jakarta.security.enterprise-api</artifactId>
+      <version>${jakarta.security.version}</version>
     </dependency>
 <!--    END of Jakarta Dependencies-->
 <!--    BEGIN of Others generics Dependencies-->

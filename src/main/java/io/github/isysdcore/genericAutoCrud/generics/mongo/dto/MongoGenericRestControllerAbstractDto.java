@@ -36,17 +36,18 @@ import java.io.Serializable;
  * provided by the framework.</p>
  *
  * @param <ENTITY> the entity type representing the MongoDB document
+ * @param <DTO> the Data Transfer Object (DTO) type used for request and
+ *              response payloads
  * @param <SERVICE> the service implementation responsible for business and
  *                  persistence operations on {@code ENTITY}
  * @param <ID> the identifier type used by {@code ENTITY}
- * @param <DTO> the Data Transfer Object (DTO) type used for request and
- *              response payloads
+
  *
  * @author Domingos Fernando
  */
 public abstract class MongoGenericRestControllerAbstractDto<
         ENTITY extends GenericEntity<ID>, 
-        DTO extends GenericDto<ID>,
+        DTO,
         SERVICE extends MongoGenericRestServiceAbstractDto<ENTITY, DTO,?, ?,ID>,
         ID extends Serializable> implements GenericRestControllerDto<DTO, ID> {
 

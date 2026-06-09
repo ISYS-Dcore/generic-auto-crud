@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 * @param <ENTITY> The Entity class that represent the database entity
 * @param <DTO> The Entity class that represent Output DTO
 * @param <REPOSITORY> The generic Repository modified by entity and id datatype injected
+* @param <MAPPER> the mapper responsible for converting between {@code ENTITY} and {@code DTO}
 * @param <ID> The Class type that represent the id field datatype of entity of type ENTITY
 *
 * */
@@ -48,7 +49,7 @@ import java.util.logging.Logger;
 @Transactional
 public abstract class MongoGenericRestServiceAbstractDto<
         ENTITY extends GenericEntity<ID>,
-        DTO extends GenericDto<ID>,
+        DTO,
         REPOSITORY extends MongoGenericRepository<ENTITY,ID>,
         MAPPER extends GenericDTOMapper<DTO, ENTITY>,
         ID extends Serializable>{

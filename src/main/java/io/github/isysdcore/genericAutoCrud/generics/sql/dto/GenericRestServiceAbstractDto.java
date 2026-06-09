@@ -47,7 +47,7 @@ import java.util.logging.Logger;
  */
 public abstract class GenericRestServiceAbstractDto<
         ENTITY extends GenericEntity<ID>,
-        DTO extends GenericDto<ID>,
+        DTO,
         REPOSITORY extends GenericRepository<ENTITY,ID>,
         MAPPER extends GenericDTOMapper<DTO, ENTITY>,
         ID extends Serializable>{

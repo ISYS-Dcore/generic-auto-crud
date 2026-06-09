@@ -43,7 +43,7 @@ import java.io.Serializable;
  */
 public abstract class GenericRestControllerAbstractDto<
         ENTITY extends GenericEntity<ID>,
-        DTO extends GenericDto<ID>,
+        DTO,
         SERVICE extends GenericRestServiceAbstractDto<ENTITY, DTO,?, ?,ID>,
         ID extends Serializable> implements GenericRestControllerDto<DTO, ID> {
 
