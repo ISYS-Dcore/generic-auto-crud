@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * ApiError is a class that represents an error response in the API.
@@ -151,7 +153,18 @@ public class ApiError
      */
     private void processDetails(String content)
     {
-        this.details = content.substring(content.indexOf("Detail:") + 7, content.indexOf(" at ")).trim();
+        if(content == null || content.isEmpty()){
+            this.details = "No details found or provided";
+        } else{
+            // Regex matches "Detail:" followed by anything, stopping at " at " (non-greedy .*?)
+            Pattern pattern = Pattern.compile("Detail:(.*?)\\sat\\s");
+            Matcher matcher = pattern.matcher(content);
+            if (matcher.find()) {
+                this.details = matcher.group(1).trim();
+            } else {
+                this.details = content;
+            }
+        }
     }
 
 }
