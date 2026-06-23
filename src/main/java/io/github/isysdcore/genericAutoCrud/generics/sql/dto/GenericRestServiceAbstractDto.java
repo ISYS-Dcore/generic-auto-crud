@@ -55,6 +55,10 @@ public abstract class GenericRestServiceAbstractDto<
     @Autowired
     public REPOSITORY repository;
     protected MAPPER mapper;
+
+    public GenericRestServiceAbstractDto(MAPPER mapper) {
+        this.mapper = mapper;
+    }
     /**
      *
      * @param newEntity The new entity registry of type ENTITY to store in database

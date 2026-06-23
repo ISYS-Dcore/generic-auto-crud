@@ -4,7 +4,7 @@
 
   <groupId>io.github.isys-dcore</groupId>
   <artifactId>generic-auto-crud</artifactId>
-  <version>0.5.12</version>
+  <version>0.6.0</version>
 <!--  <packaging>jar</packaging>-->
   <name>generic-auto-crud</name>
   <url>https://github.com/ISYS-Dcore/generic-auto-crud</url>
@@ -205,7 +205,13 @@
       <artifactId>aspectjweaver</artifactId>
       <version>1.9.24</version>
     </dependency>
-    <!--    END of Others generics Dependencies-->
+      <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-test-autoconfigure</artifactId>
+          <version>3.5.14</version>
+          <scope>test</scope>
+      </dependency>
+      <!--    END of Others generics Dependencies-->
   </dependencies>
   <build>
     <plugins>

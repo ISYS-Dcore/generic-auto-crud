@@ -97,7 +97,7 @@ public class UtilServiceTests {
         return field;
     }
 
-    public void setValueByClassType(Field field, Object entity) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, InstantiationException {
+    public static void setValueByClassType(Field field, Object entity) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, InstantiationException {
         Random random = new Random();
         field.setAccessible(true);
         if(field.get(entity) instanceof String){

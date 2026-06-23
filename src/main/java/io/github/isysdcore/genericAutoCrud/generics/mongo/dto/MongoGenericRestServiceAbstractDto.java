@@ -45,7 +45,6 @@ import java.util.logging.Logger;
 *
 * */
 
-@RequiredArgsConstructor
 @Transactional
 public abstract class MongoGenericRestServiceAbstractDto<
         ENTITY extends GenericEntity<ID>,
@@ -56,13 +55,17 @@ public abstract class MongoGenericRestServiceAbstractDto<
 
     @Autowired
     public REPOSITORY repository;
-    protected MAPPER mapper;
+    protected final MAPPER mapper;
     @Autowired
     private MongoTemplate mongoTemplate;
     private final Class<ENTITY> entityClass;
     @Autowired
     private MongoPropertyResolver mongoPropertyResolver;
 
+    public MongoGenericRestServiceAbstractDto(MAPPER mapper,  Class<ENTITY> entityClass) {
+        this.entityClass = entityClass;
+        this.mapper = mapper;
+    }
     /**
      *
      * @param newEntity The new entity registry of type ENTITY to store in database
