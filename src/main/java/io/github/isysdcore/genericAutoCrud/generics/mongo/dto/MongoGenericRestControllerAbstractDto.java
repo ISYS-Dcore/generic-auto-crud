@@ -6,10 +6,8 @@
 package io.github.isysdcore.genericAutoCrud.generics.mongo.dto;
 
 
-import io.github.isysdcore.genericAutoCrud.generics.GenericEntity;
-import io.github.isysdcore.genericAutoCrud.generics.GenericModelAssembler;
-import io.github.isysdcore.genericAutoCrud.generics.GenericRestController;
-import io.github.isysdcore.genericAutoCrud.generics.dto.GenericDto;
+import io.github.isysdcore.genericAutoCrud.generics.nosql.GenericNoSqlEntity;
+import io.github.isysdcore.genericAutoCrud.generics.sql.GenericEntity;
 import io.github.isysdcore.genericAutoCrud.generics.dto.GenericModelAssemblerDto;
 import io.github.isysdcore.genericAutoCrud.generics.dto.GenericRestControllerDto;
 import io.github.isysdcore.genericAutoCrud.utils.Constants;
@@ -40,16 +38,16 @@ import java.io.Serializable;
  *              response payloads
  * @param <SERVICE> the service implementation responsible for business and
  *                  persistence operations on {@code ENTITY}
- * @param <ID> the identifier type used by {@code ENTITY}
+ * With String as the identifier type used by {@code ENTITY}
 
  *
  * @author Domingos Fernando
  */
+@Deprecated(since = "0.7.0")
 public abstract class MongoGenericRestControllerAbstractDto<
-        ENTITY extends GenericEntity<ID>, 
+        ENTITY extends GenericNoSqlEntity,
         DTO,
-        SERVICE extends MongoGenericRestServiceAbstractDto<ENTITY, DTO,?, ?,ID>,
-        ID extends Serializable> implements GenericRestControllerDto<DTO, ID> {
+        SERVICE extends MongoGenericRestServiceAbstractDto<ENTITY, DTO,?, ?>> implements GenericRestControllerDto<DTO, String> {
 
     @Getter
     private final String RESOIRCE_NAME = "";
@@ -101,7 +99,7 @@ public abstract class MongoGenericRestControllerAbstractDto<
 
     @Override
     @GetMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
-    public ResponseEntity<EntityModel<DTO>> findById(@PathVariable(name = "id") ID id) {
+    public ResponseEntity<EntityModel<DTO>> findById(@PathVariable(name = "id") String id) {
         try{
             DTO entity = serviceImpl.findById(id);
             return ResponseEntity.ok(assembler.toModel(entity));
@@ -126,7 +124,7 @@ public abstract class MongoGenericRestControllerAbstractDto<
 
     @Override
     @PutMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
-    public ResponseEntity<?> update(@PathVariable(name = "id") ID id, @RequestBody DTO newEntity) {
+    public ResponseEntity<?> update(@PathVariable(name = "id") String id, @RequestBody DTO newEntity) {
 
         try{
             EntityModel<DTO> entityModel = assembler.toModel(serviceImpl.update(id, newEntity));
@@ -140,7 +138,7 @@ public abstract class MongoGenericRestControllerAbstractDto<
 
     @Override
     @DeleteMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
-    public ResponseEntity<?> delete(@PathVariable(name = "id") ID id) {
+    public ResponseEntity<?> delete(@PathVariable(name = "id") String id) {
         try{
             EntityModel<DTO> entityModel = assembler.toModel(serviceImpl.delete(id));
             return ResponseEntity //

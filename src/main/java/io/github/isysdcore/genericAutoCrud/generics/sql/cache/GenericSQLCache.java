@@ -1,7 +1,6 @@
-package io.github.isysdcore.genericAutoCrud.generics.cache;
+package io.github.isysdcore.genericAutoCrud.generics.sql.cache;
 
-import io.github.isysdcore.genericAutoCrud.generics.GenericEntity;
-import io.github.isysdcore.genericAutoCrud.generics.mongo.MongoGenericRestServiceAbstract;
+import io.github.isysdcore.genericAutoCrud.generics.sql.GenericEntity;
 import io.github.isysdcore.genericAutoCrud.generics.sql.GenericRestServiceAbstract;
 import jakarta.annotation.PostConstruct;
 

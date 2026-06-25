@@ -3,11 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.github.isysdcore.genericAutoCrud.generics.sql;
+package io.github.isysdcore.genericAutoCrud.generics.nosql.dto;
 
 
-import io.github.isysdcore.genericAutoCrud.generics.GenericModelAssembler;
-import io.github.isysdcore.genericAutoCrud.generics.GenericRestController;
+import io.github.isysdcore.genericAutoCrud.generics.dto.GenericModelAssemblerDto;
+import io.github.isysdcore.genericAutoCrud.generics.dto.GenericRestControllerDto;
+import io.github.isysdcore.genericAutoCrud.generics.nosql.GenericNoSqlEntity;
 import io.github.isysdcore.genericAutoCrud.utils.Constants;
 import io.github.isysdcore.genericAutoCrud.utils.DefaultSearchParameters;
 import lombok.Getter;
@@ -17,52 +18,54 @@ import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.Serializable;
-
 /**
- * Abstract base REST controller providing generic CRUD endpoints for entity-based APIs for SQL Databases.
+ * Abstract REST controller for MongoDB-based entities that provides
+ * standard CRUD endpoints and integrates with a generic service layer.
  *
- * <p>This class defines a reusable REST controller layer that delegates business logic
- * to a service implementation, enabling consistent CRUD operations across all entities
- * without requiring repetitive controller code.</p>
+ * <p>This controller serves as a base implementation for REST resources,
+ * delegating business operations to a service component and handling the
+ * conversion between entities and Data Transfer Objects (DTOs).</p>
  *
- * <p>It is designed for entity-based APIs where entities are exposed directly (not DTOs),
- * and acts as a standard foundation for REST controllers in the application.</p>
+ * <p>Implementations typically extend this class to expose CRUD operations
+ * for a specific resource while reusing the common controller behavior
+ * provided by the framework.</p>
  *
- * @param <ENTITY> the entity type representing the database model
- * @param <SERVICE> the service implementation responsible for business logic and persistence
- *                  operations for the given entity
- * @param <ID> the identifier type of the entity, must be {@link java.io.Serializable}
+ * @param <ENTITY> the entity type representing the MongoDB document
+ * @param <DTO> the Data Transfer Object (DTO) type used for request and
+ *              response payloads
+ * @param <SERVICE> the service implementation responsible for business and
+ *                  persistence operations on {@code ENTITY}
+ * With String as the identifier type used by {@code ENTITY}
+
  *
- * @author domingos.fernando
+ * @author Domingos Fernando
  */
-public abstract class GenericRestControllerAbstract<
-        ENTITY extends GenericEntity<ID>,
-        SERVICE extends GenericRestServiceAbstract<
-                ENTITY,?,ID>, ID extends Serializable>
-        implements GenericRestController<ENTITY, ID> {
+public abstract class GenericNoSqlRestControllerAbstractDto<
+        ENTITY extends GenericNoSqlEntity,
+        DTO,
+        SERVICE extends GenericNoSqlRestServiceAbstractDto<ENTITY, DTO,?, ?>> implements GenericRestControllerDto<DTO, String> {
 
     @Getter
     private final String RESOIRCE_NAME = "";
     @Getter
-    private final GenericModelAssembler<ENTITY> assembler;
+    private final GenericModelAssemblerDto<DTO> assembler;
     private final SERVICE serviceImpl;
     private ENTITY object;
 
-    public GenericRestControllerAbstract(SERVICE serviceImpl) {
-        this.assembler = new GenericModelAssembler<>( this);
+    public GenericNoSqlRestControllerAbstractDto(SERVICE serviceImpl) {
+        this.assembler = new GenericModelAssemblerDto<>( this);
         this.serviceImpl = serviceImpl;
     }
 
-    public GenericRestControllerAbstract(SERVICE serviceImpl, ENTITY entity) {
-        this.assembler = new GenericModelAssembler<>( this);
+    public GenericNoSqlRestControllerAbstractDto(SERVICE serviceImpl, ENTITY entity) {
+        this.assembler = new GenericModelAssemblerDto<>( this);
         this.serviceImpl = serviceImpl;
         this.object = entity;
     }
 
     @Override
     @GetMapping(value = RESOIRCE_NAME, params = {Constants.PAGE, Constants.SIZE, Constants.SORT})
-    public Page<ENTITY> findAll(@RequestParam(value = Constants.PAGE) int page,
+    public Page<DTO> findAll(@RequestParam(value = Constants.PAGE) int page,
                            @RequestParam(value = Constants.SIZE) int size,
                            @RequestParam(value = Constants.SORT) int sort) {
         try {
@@ -77,7 +80,7 @@ public abstract class GenericRestControllerAbstract<
     @GetMapping(value = RESOIRCE_NAME + Constants.RESOURCE_SEARCH,
             params = {Constants.PAGE, Constants.SIZE, Constants.SORT,
                     Constants.QUERY})
-    public Page<ENTITY> findByQuery(
+    public Page<DTO> findByQuery(
             @RequestParam(value = Constants.PAGE) int page,
             @RequestParam(value = Constants.SIZE) int size,
             @RequestParam(value = Constants.SORT) int sort,
@@ -92,9 +95,9 @@ public abstract class GenericRestControllerAbstract<
 
     @Override
     @GetMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
-    public ResponseEntity<EntityModel<ENTITY>> findById(@PathVariable(name = "id") ID id) {
+    public ResponseEntity<EntityModel<DTO>> findById(@PathVariable(name = "id") String id) {
         try{
-            ENTITY entity = serviceImpl.findById(id);
+            DTO entity = serviceImpl.findById(id);
             return ResponseEntity.ok(assembler.toModel(entity));
         }catch (Exception e){
             throw e;
@@ -103,10 +106,10 @@ public abstract class GenericRestControllerAbstract<
 
     @Override
     @PostMapping(RESOIRCE_NAME)
-    public ResponseEntity<?> create(@RequestBody ENTITY newEntity) {
+    public ResponseEntity<?> create(@RequestBody DTO newEntity) {
         try{
-            ENTITY saved = serviceImpl.save(newEntity);
-            EntityModel<ENTITY> entityModel = assembler.toModel(saved);
+            DTO saved = serviceImpl.save(newEntity);
+            EntityModel<DTO> entityModel = assembler.toModel(saved);
             return ResponseEntity //
                     .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
                     .body(entityModel);
@@ -117,10 +120,10 @@ public abstract class GenericRestControllerAbstract<
 
     @Override
     @PutMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
-    public ResponseEntity<?> update(@PathVariable(name = "id") ID id, @RequestBody ENTITY newEntity) {
+    public ResponseEntity<?> update(@PathVariable(name = "id") String id, @RequestBody DTO newEntity) {
 
         try{
-            EntityModel<ENTITY> entityModel = assembler.toModel(serviceImpl.update(id, newEntity));
+            EntityModel<DTO> entityModel = assembler.toModel(serviceImpl.update(id, newEntity));
             return ResponseEntity //
                     .ok(entityModel);
         }catch (Exception e){
@@ -131,9 +134,9 @@ public abstract class GenericRestControllerAbstract<
 
     @Override
     @DeleteMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
-    public ResponseEntity<?> delete(@PathVariable(name = "id") ID id) {
+    public ResponseEntity<?> delete(@PathVariable(name = "id") String id) {
         try{
-            EntityModel<ENTITY> entityModel = assembler.toModel(serviceImpl.delete(id));
+            EntityModel<DTO> entityModel = assembler.toModel(serviceImpl.delete(id));
             return ResponseEntity //
                     .noContent()
                     .build();

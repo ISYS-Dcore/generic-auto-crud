@@ -1,12 +1,11 @@
-package io.github.isysdcore.genericAutoCrud.utils;
+package io.github.isysdcore.genericAutoCrud.test.utils;
 
-import io.github.isysdcore.genericAutoCrud.generics.GenericEntity;
+import io.github.isysdcore.genericAutoCrud.generics.sql.GenericEntity;
 import io.github.isysdcore.genericAutoCrud.generics.sql.GenericRestServiceAbstract;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -15,11 +14,11 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * @author domingos.fernando
- * @created 26/12/2024 - 16:28
- * @project Generic Auto CRUD
- */
+///**
+// * @author domingos.fernando
+// * @created 26/12/2024 - 16:28
+// * @project Generic Auto CRUD
+// */
 @Component
 @Slf4j
 public class UtilServiceTests {

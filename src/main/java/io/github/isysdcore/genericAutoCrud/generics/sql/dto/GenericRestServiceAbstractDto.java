@@ -7,10 +7,8 @@ package io.github.isysdcore.genericAutoCrud.generics.sql.dto;
 
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.Node;
-import io.github.isysdcore.genericAutoCrud.ex.ResourceNotFoundException;
-import io.github.isysdcore.genericAutoCrud.generics.GenericEntity;
+import io.github.isysdcore.genericAutoCrud.generics.sql.GenericEntity;
 import io.github.isysdcore.genericAutoCrud.generics.dto.GenericDTOMapper;
-import io.github.isysdcore.genericAutoCrud.generics.dto.GenericDto;
 import io.github.isysdcore.genericAutoCrud.generics.sql.GenericRepository;
 import io.github.isysdcore.genericAutoCrud.generics.sql.GenericRestServiceAbstract;
 import io.github.isysdcore.genericAutoCrud.query.sql.CustomRsqlVisitor;

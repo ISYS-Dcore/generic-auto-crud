@@ -6,8 +6,8 @@
 package io.github.isysdcore.genericAutoCrud.generics.mongo;
 
 
-import io.github.isysdcore.genericAutoCrud.ex.ResourceNotFoundException;
-import io.github.isysdcore.genericAutoCrud.generics.GenericEntity;
+import io.github.isysdcore.genericAutoCrud.generics.nosql.GenericNoSqlEntity;
+import io.github.isysdcore.genericAutoCrud.generics.sql.GenericEntity;
 import io.github.isysdcore.genericAutoCrud.generics.GenericModelAssembler;
 import io.github.isysdcore.genericAutoCrud.generics.GenericRestController;
 import io.github.isysdcore.genericAutoCrud.utils.Constants;
@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.*;
 import java.io.Serializable;
 
 /**
+ * @deprecated This class is deprecated and will be removed in future versions.
+ * Please use the updated class interfaces provided by GenericNoSqlRestControllerAbstract.
+ *
  * Abstract base REST controller for MongoDB entities.
  *
  * <p>This class provides a generic implementation of common REST operations,
@@ -34,11 +37,12 @@ import java.io.Serializable;
  * @param <ENTITY> the entity type representing the MongoDB document
  * @param <SERVICE> the service implementation responsible for business logic
  *                  and persistence operations
- * @param <ID> the identifier type of the entity
+ * with a String as ID type for all entities
  *
  * @author domingos.fernando
  */
-public abstract class MongoGenericRestControllerAbstract<ENTITY extends GenericEntity<ID>, SERVICE extends MongoGenericRestServiceAbstract<ENTITY,?,ID>, ID extends Serializable> implements GenericRestController<ENTITY, ID> {
+@Deprecated(since = "0.7.0")
+public abstract class MongoGenericRestControllerAbstract<ENTITY extends GenericNoSqlEntity, SERVICE extends MongoGenericRestServiceAbstract<ENTITY,?>> implements GenericRestController<ENTITY, String> {
 
     @Getter
     private final String RESOIRCE_NAME = "";
@@ -90,7 +94,7 @@ public abstract class MongoGenericRestControllerAbstract<ENTITY extends GenericE
 
     @Override
     @GetMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
-    public ResponseEntity<EntityModel<ENTITY>> findById(@PathVariable(name = "id") ID id) {
+    public ResponseEntity<EntityModel<ENTITY>> findById(@PathVariable(name = "id") String id) {
         try{
             ENTITY entity = serviceImpl.findById(id);
             return ResponseEntity.ok(assembler.toModel(entity));
@@ -115,7 +119,7 @@ public abstract class MongoGenericRestControllerAbstract<ENTITY extends GenericE
 
     @Override
     @PutMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
-    public ResponseEntity<?> update(@PathVariable(name = "id") ID id, @RequestBody ENTITY newEntity) {
+    public ResponseEntity<?> update(@PathVariable(name = "id") String id, @RequestBody ENTITY newEntity) {
 
         try{
             EntityModel<ENTITY> entityModel = assembler.toModel(serviceImpl.update(id, newEntity));
@@ -129,7 +133,7 @@ public abstract class MongoGenericRestControllerAbstract<ENTITY extends GenericE
 
     @Override
     @DeleteMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
-    public ResponseEntity<?> delete(@PathVariable(name = "id") ID id) {
+    public ResponseEntity<?> delete(@PathVariable(name = "id") String id) {
         try{
             EntityModel<ENTITY> entityModel = assembler.toModel(serviceImpl.delete(id));
             return ResponseEntity //

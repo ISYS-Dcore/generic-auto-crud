@@ -1,10 +1,10 @@
-package io.github.isysdcore.genericAutoCrud.generics;
+package io.github.isysdcore.genericAutoCrud.test.generics;
 
-/**
- * @author domingos.fernando
- * @created 04/01/2025 - 14:57
- * @project smsg
- */
+///**
+// * @author domingos.fernando
+// * @created 04/01/2025 - 14:57
+// * @project smsg
+// */
 public interface AuthenticationManagement {
     /**
      * Method do prepare and insert in database a new active user

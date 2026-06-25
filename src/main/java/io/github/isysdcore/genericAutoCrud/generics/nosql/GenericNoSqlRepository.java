@@ -1,20 +1,16 @@
-package io.github.isysdcore.genericAutoCrud.generics.mongo;
+package io.github.isysdcore.genericAutoCrud.generics.nosql;
 
 import jakarta.validation.constraints.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.Optional;
 
 /**
- *
- * @deprecated This class is deprecated and will be removed in future versions.
- * Please use the updated repository interfaces provided by GenericNoSqlRepository.
- *
  * Generic repository contract for MongoDB entities.
  *
  * <p>This interface extends the MongoDB repository infrastructure and provides
@@ -29,17 +25,12 @@ import java.util.Optional;
  *
  * @author Domingos Fernando
  */
-@Deprecated(since = "0.7.0")
 @NoRepositoryBean
-public interface MongoGenericRepository<ENTITY> extends MongoRepository<ENTITY, String>  {
+public interface GenericNoSqlRepository<ENTITY extends GenericNoSqlEntity> extends ListCrudRepository<ENTITY, String>, PagingAndSortingRepository<ENTITY, String> {
 
-    @NotNull
-    @Override
-    @Query("{ 'deleted' : false }")
-    Page<ENTITY> findAll(@NonNull Pageable pageable);
+    @NonNull
+    Page<ENTITY> findAllByDeletedFalse(@NonNull Pageable pageable);
 
-    @NotNull
-    @Override
-    @Query("{ 'deleted' : false, 'id' : ?0 }")
-    Optional<ENTITY> findById(@NonNull String entityId);
+    @NonNull
+    Optional<ENTITY> findByIdAndDeletedFalse(@NonNull String id);
 }

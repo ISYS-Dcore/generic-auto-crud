@@ -1,4 +1,4 @@
-package io.github.isysdcore.genericAutoCrud.generics;
+package io.github.isysdcore.genericAutoCrud.test.generics;
 
 public interface RestIntegrationTests {
     void shouldCreateEntity() throws Exception; //: POST /api/entity

@@ -6,7 +6,7 @@
 package io.github.isysdcore.genericAutoCrud.generics.sql.dto;
 
 
-import io.github.isysdcore.genericAutoCrud.generics.GenericEntity;
+import io.github.isysdcore.genericAutoCrud.generics.sql.GenericEntity;
 import io.github.isysdcore.genericAutoCrud.generics.dto.GenericDto;
 import io.github.isysdcore.genericAutoCrud.generics.dto.GenericModelAssemblerDto;
 import io.github.isysdcore.genericAutoCrud.generics.dto.GenericRestControllerDto;

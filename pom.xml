@@ -4,7 +4,7 @@
 
   <groupId>io.github.isys-dcore</groupId>
   <artifactId>generic-auto-crud</artifactId>
-  <version>0.6.1</version>
+  <version>0.7.0</version>
 <!--  <packaging>jar</packaging>-->
   <name>generic-auto-crud</name>
   <url>https://github.com/ISYS-Dcore/generic-auto-crud</url>
@@ -89,7 +89,7 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-test</artifactId>
       <version>3.5.14</version>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
     <!-- END of Spring Framework dependencies-->
 <!-- BEGIN Test Dependencies -->
@@ -97,7 +97,7 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>${junit.version}</version>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
     <!-- END Test Dependencies -->
     <!-- BEGIN MAP Dependencies -->
@@ -174,31 +174,29 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>2.21.2</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>3.18.0</version>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
       <version>RELEASE</version>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-library</artifactId>
       <version>3.0</version> <!-- Or the latest version -->
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest</artifactId>
       <version>3.0</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
@@ -209,7 +207,11 @@
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-test-autoconfigure</artifactId>
           <version>3.5.14</version>
-          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.junit.jupiter</groupId>
+          <artifactId>junit-jupiter-api</artifactId>
+          <version>6.1.0</version>
       </dependency>
       <!--    END of Others generics Dependencies-->
   </dependencies>

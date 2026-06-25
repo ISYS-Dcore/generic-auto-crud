@@ -1,7 +1,7 @@
-package io.github.isysdcore.genericAutoCrud.generics.cache;
+package io.github.isysdcore.genericAutoCrud.generics.nosql.cache;
 
-import io.github.isysdcore.genericAutoCrud.generics.GenericEntity;
-import io.github.isysdcore.genericAutoCrud.generics.mongo.MongoGenericRestServiceAbstract;
+import io.github.isysdcore.genericAutoCrud.generics.nosql.GenericNoSqlEntity;
+import io.github.isysdcore.genericAutoCrud.generics.nosql.GenericNoSqlRestServiceAbstract;
 import jakarta.annotation.PostConstruct;
 
 import java.io.Serializable;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * comfortably in available memory.
  * </p>
  *
- * @param <ID> the entity identifier type
+ * With String as the entity identifier type
  * @param <ENTITY> the entity type being cached
  * @param <SERVICE> the service type responsible for entity operations
  *
@@ -65,14 +65,14 @@ import java.util.stream.Collectors;
  * @author Domingos Fernando
  * @since 1.0
  */
-public class GenericMongoCache<ID extends Serializable, ENTITY extends GenericEntity<ID>, SERVICE extends MongoGenericRestServiceAbstract<ENTITY,?,?>> {
+public class GenericNoSqlCache<ENTITY extends GenericNoSqlEntity, SERVICE extends GenericNoSqlRestServiceAbstract<ENTITY,?>> {
 
     private final SERVICE entityService;
-    private Map<ID, ENTITY> cacheEntities;
+    private Map<String, ENTITY> cacheEntities;
     private final Map<String, Map<Object, List<ENTITY>>> secondaryIndexes = new ConcurrentHashMap<>();
     private final Map<String, Function<ENTITY, Object>> indexExtractors = new HashMap<>();
 
-    public GenericMongoCache(SERVICE entityService){
+    public GenericNoSqlCache(SERVICE entityService){
         this.entityService = entityService;
     }
 
@@ -94,11 +94,11 @@ public class GenericMongoCache<ID extends Serializable, ENTITY extends GenericEn
         });
     }
 
-    public ENTITY get(ID key) {
+    public ENTITY get(String key) {
         return cacheEntities.get(key);
     }
 
-    public Map<ID, ENTITY> getAll() {
+    public Map<String, ENTITY> getAll() {
         return Collections.unmodifiableMap(cacheEntities);
     }
 
