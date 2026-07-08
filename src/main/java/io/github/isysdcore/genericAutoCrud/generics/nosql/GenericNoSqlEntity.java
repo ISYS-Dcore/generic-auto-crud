@@ -5,6 +5,7 @@
 package io.github.isysdcore.genericAutoCrud.generics.nosql;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.github.isysdcore.genericAutoCrud.generics.GenericBaseEntity;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
@@ -47,7 +48,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @JsonIgnoreProperties(value = {"deleted", "deletedAt", "updatedAt", "createdAt", "updatedBy", "deletedBy"}, allowSetters = true)
-public abstract class GenericNoSqlEntity implements Serializable {
+public abstract class GenericNoSqlEntity implements Serializable, GenericBaseEntity<String> {
     @Serial
     private static final long serialVersionUID = 1L;
     @Id

@@ -10,8 +10,8 @@ import java.io.Serializable;
  * Generic JPA repository interface providing standard CRUD operations and
  * support for JPA Specifications.
  *
- * <p>This repository extends both {@link org.springframework.data.jpa.repository.JpaRepository}
- * and {@link org.springframework.data.jpa.repository.JpaSpecificationExecutor},
+ * <p>This repository extends both {@link JpaRepository}
+ * and {@link JpaSpecificationExecutor},
  * enabling basic persistence operations as well as dynamic query निर्माण using
  * JPA Criteria-based specifications.</p>
  *
@@ -24,8 +24,8 @@ import java.io.Serializable;
  * @author domingos.fernando
  */
 @NoRepositoryBean
-public interface GenericRepository<
-        ENTITY extends GenericEntity<ID>,ID extends Serializable>
+public interface GenericSqlRepository<
+        ENTITY extends GenericSqlEntity<ID>,ID extends Serializable>
         extends JpaRepository<ENTITY, ID>,
         JpaSpecificationExecutor<ENTITY> {
 }

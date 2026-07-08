@@ -8,8 +8,7 @@ package io.github.isysdcore.genericAutoCrud.generics.nosql;
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.Node;
 import io.github.isysdcore.genericAutoCrud.ex.ResourceNotFoundException;
-import io.github.isysdcore.genericAutoCrud.generics.mongo.MongoGenericRepository;
-import io.github.isysdcore.genericAutoCrud.generics.sql.GenericRestServiceAbstract;
+import io.github.isysdcore.genericAutoCrud.generics.GenericRestService;
 import io.github.isysdcore.genericAutoCrud.query.mongo.MongoPropertyResolver;
 import io.github.isysdcore.genericAutoCrud.query.mongo.MongoRsqlVisitor;
 import io.github.isysdcore.genericAutoCrud.utils.DefaultSearchParameters;
@@ -44,7 +43,8 @@ import java.util.logging.Logger;
  * @author domingos.fernando
  */
 @RequiredArgsConstructor
-public abstract class GenericNoSqlRestServiceAbstract<ENTITY extends GenericNoSqlEntity, REPOSITORY extends GenericNoSqlRepository<ENTITY>>{
+public abstract class GenericNoSqlRestServiceAbstract<ENTITY extends GenericNoSqlEntity, REPOSITORY extends GenericNoSqlRepository<ENTITY>>
+implements GenericRestService<ENTITY, String> {
 
     @Autowired
     public REPOSITORY repository;
@@ -64,7 +64,7 @@ public abstract class GenericNoSqlRestServiceAbstract<ENTITY extends GenericNoSq
            newEntity.setCreatedAt(Instant.now());
            return repository.save(newEntity);
         } catch (Exception ex) {
-            Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GenericNoSqlRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
             ex.printStackTrace();
         }
         return null;
@@ -77,7 +77,7 @@ public abstract class GenericNoSqlRestServiceAbstract<ENTITY extends GenericNoSq
      */
     public ENTITY findById(String id) {
         return repository.findByIdAndDeletedFalse(id).orElseThrow(() -> {
-            Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, new RuntimeException("Error accessing find entity  of type "+ entityClass.getName() +" by id "));
+            Logger.getLogger(GenericNoSqlRestServiceAbstract.class.getName()).log(Level.SEVERE, null, new RuntimeException("Error accessing find entity  of type "+ entityClass.getName() +" by id "));
             return new EntityNotFoundException("Error was unable to find entity with id: " + id + " on database.");
         });
     }
@@ -143,7 +143,7 @@ public abstract class GenericNoSqlRestServiceAbstract<ENTITY extends GenericNoSq
                                     fd.set(newEntity, oldField.get(oldEntity));
                                 }
                             } catch (NoSuchFieldException | IllegalAccessException e) {
-                                Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, e);
+                                Logger.getLogger(GenericNoSqlRestServiceAbstract.class.getName()).log(Level.SEVERE, null, e);
                             }
                         });
                         newEntity.setCreatedAt(oldEntity.getCreatedAt());
@@ -151,7 +151,7 @@ public abstract class GenericNoSqlRestServiceAbstract<ENTITY extends GenericNoSq
                         newEntity.setUpdatedAt(Instant.now());
                         newEntity.setId(id);
                     } catch (SecurityException | IllegalArgumentException ex) {
-                        Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GenericNoSqlRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     return repository.save(newEntity);
                 }) //
@@ -179,7 +179,7 @@ public abstract class GenericNoSqlRestServiceAbstract<ENTITY extends GenericNoSq
                                     fd.set(newEntity, oldField.get(oldEntity));
                                 }
                             } catch (NoSuchFieldException | IllegalAccessException e) {
-                                Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, e);
+                                Logger.getLogger(GenericNoSqlRestServiceAbstract.class.getName()).log(Level.SEVERE, null, e);
                             }
                         });
                         newEntity.setCreatedAt(oldEntity.getCreatedAt());
@@ -187,7 +187,7 @@ public abstract class GenericNoSqlRestServiceAbstract<ENTITY extends GenericNoSq
                         newEntity.setUpdatedAt(Instant.now());
                         newEntity.setId(id);
                     } catch (SecurityException | IllegalArgumentException ex) {
-                        Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GenericNoSqlRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     return repository.save(newEntity);
                 }) //
@@ -205,7 +205,7 @@ public abstract class GenericNoSqlRestServiceAbstract<ENTITY extends GenericNoSq
                         oldEntity.setDeletedAt(Instant.now());
                         oldEntity.setDeleted(Boolean.TRUE);
                     } catch (Exception ex) {
-                        Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GenericNoSqlRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     return repository.save(oldEntity);
                 }) //
@@ -225,7 +225,7 @@ public abstract class GenericNoSqlRestServiceAbstract<ENTITY extends GenericNoSq
                         oldEntity.setDeleted(Boolean.TRUE);
                         oldEntity.setDeletedBy(deletedBy);
                     } catch (Exception ex) {
-                        Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GenericNoSqlRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     return repository.save(oldEntity);
                 }) //

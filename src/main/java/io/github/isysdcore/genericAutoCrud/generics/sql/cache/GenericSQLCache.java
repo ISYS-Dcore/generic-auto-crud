@@ -1,7 +1,7 @@
 package io.github.isysdcore.genericAutoCrud.generics.sql.cache;
 
-import io.github.isysdcore.genericAutoCrud.generics.sql.GenericEntity;
-import io.github.isysdcore.genericAutoCrud.generics.sql.GenericRestServiceAbstract;
+import io.github.isysdcore.genericAutoCrud.generics.GenericRestService;
+import io.github.isysdcore.genericAutoCrud.generics.sql.GenericSqlEntity;
 import jakarta.annotation.PostConstruct;
 
 import java.io.Serializable;
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  * @author domingos.fernando
  * @since 0.1.0
  */
-public class GenericSQLCache<ID extends Serializable, ENTITY extends GenericEntity<ID>, SERVICE extends GenericRestServiceAbstract<ENTITY,?,?>> {
+public class GenericSQLCache<ID extends Serializable, ENTITY extends GenericSqlEntity<ID>, SERVICE extends GenericRestService<ENTITY,ID>> {
 
     private final SERVICE entityService;
     private Map<ID, ENTITY> cacheEntities;

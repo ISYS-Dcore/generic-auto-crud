@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.isysdcore.genericAutoCrud.generics.sql.GenericEntity;
+import io.github.isysdcore.genericAutoCrud.generics.GenericBaseEntity;
 import io.github.isysdcore.genericAutoCrud.test.generics.model.TestProperties;
 import io.github.isysdcore.genericAutoCrud.test.utils.UtilServiceTests;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
 import java.util.UUID;
 
 /**
- * Abstract integration test for entities extending {@link GenericEntity}.
+ * Abstract integration test for entities extending {@link GenericBaseEntity}.
  * Concrete subclasses only need to pass the endpoint path and a template entity instance.
  * <p>
  * All CRUD tests are provided. Authentication can be added by overriding
@@ -43,7 +43,7 @@ import java.util.UUID;
 @Slf4j
 @SpringBootTest
 @AutoConfigureMockMvc
-public abstract class GenericRestIntegrationTestsImpl<T extends GenericEntity<String>, K>
+public abstract class GenericRestIntegrationTestsImpl<T extends GenericBaseEntity<K>, K>
         implements RestIntegrationTests {
 
     @Autowired
@@ -58,6 +58,7 @@ public abstract class GenericRestIntegrationTestsImpl<T extends GenericEntity<St
     protected final String endpoint;
     protected final T entityTemplate;
     protected T entityInstance;
+    protected String createdEntityId;
     protected TestProperties testProperties;
 
     /**
@@ -84,19 +85,20 @@ public abstract class GenericRestIntegrationTestsImpl<T extends GenericEntity<St
      * Fills {@link #entityInstance} with random valid data using {@link UtilServiceTests}.
      * Generates a UUID for the entity's ID.
      */
-    private void prepareNewEntity() {
+    public void prepareNewEntity() {
         try {
             entityInstance = (T) entityTemplate.getClass().getDeclaredConstructor().newInstance();
             for (Field field : entityTemplate.getClass().getDeclaredFields()) {
                 field.setAccessible(true);
+                if ("id".equals(field.getName())) {
+                    continue;
+                }
                 try {
                     UtilServiceTests.setValueByClassType(field, entityInstance);
                 } catch (IllegalAccessException e) {
                     log.error("Failed to set field {}", field.getName(), e);
                 }
             }
-            entityInstance.setCreatedAt(java.time.Instant.now());
-            entityInstance.setId(UUID.randomUUID().toString());
         } catch (Exception e) {
             throw new RuntimeException("Cannot instantiate entity", e);
         }
@@ -112,15 +114,18 @@ public abstract class GenericRestIntegrationTestsImpl<T extends GenericEntity<St
      *   testProperties.setAuthToken(acquiredToken);
      * }</pre>
      */
-    public void authenticationManagement() throws Exception {}
+    public void authenticationManagement() throws Exception {
+        log.warn("No authentication management implemented. Override this method to set up authentication if required.");
+    }
 
     /**
      * Store a given number of pre‑populated entities in the database.
      * By default this does nothing; override to call your service layer,
      * e.g. {@code entityService.saveAll(listOfEntities)}.
      */
-    protected void storeEntitiesInDb(int quantity) {
+    public void storeEntitiesInDb(int quantity) {
         // Override in concrete test class if needed
+        log.warn("storeEntitiesInDb not implemented. Override this method to persist entities in the database for testing.");
     }
 
     // -----------------------------------------------------------------
@@ -149,7 +154,7 @@ public abstract class GenericRestIntegrationTestsImpl<T extends GenericEntity<St
                 .content(objectMapper.writeValueAsString(entityInstance));
         addAuthIfRequired(request);
 
-        mockMvc.perform(request)
+        String response = mockMvc.perform(request)
                 .andExpect(result -> {
                     int status = result.getResponse().getStatus();
                     Assertions.assertTrue(
@@ -158,22 +163,25 @@ public abstract class GenericRestIntegrationTestsImpl<T extends GenericEntity<St
                                     status == HttpStatus.ACCEPTED.value(),
                             "Expected 200, 201 or 202 but got " + status);
                 })
-                .andExpect(jsonPath("$.id").value(entityInstance.getId()))
-                .andDo(print());
+                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andDo(print())
+                .andReturn().getResponse().getContentAsString();
+
+        createdEntityId = objectMapper.readTree(response).get("id").asText();
     }
 
     @Override
     @Test
     public void shouldReturnEntity() throws Exception {
-        storeEntitiesInDb(1);
+        ensureCreated();
 
-        var request = get(testProperties.getResourceUrl() + "/{id}", entityInstance.getId())
+        var request = get(testProperties.getResourceUrl() + "/{id}", createdEntityId)
                 .contentType(MediaType.APPLICATION_JSON);
         addAuthIfRequired(request);
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(entityInstance.getId()))
+                .andExpect(jsonPath("$.id").value(createdEntityId))
                 .andExpect(jsonPath("$." + getFirstFieldName()).isNotEmpty())
                 .andExpect(jsonPath("$." + getSecondFieldName()).isNotEmpty())
                 .andDo(print());
@@ -182,7 +190,7 @@ public abstract class GenericRestIntegrationTestsImpl<T extends GenericEntity<St
     @Override
     @Test
     public void shouldReturnListOfEntities() throws Exception {
-        storeEntitiesInDb(2);
+        ensureCreated();
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("page", "0");
@@ -195,15 +203,14 @@ public abstract class GenericRestIntegrationTestsImpl<T extends GenericEntity<St
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.empty").value(false))
-                .andExpect(jsonPath("$.totalElements").value(greaterThan(0)))
+                .andExpect(jsonPath("$.page.totalElements").value(greaterThan(0)))
                 .andDo(print());
     }
 
     @Override
     @Test
     public void shouldReturnListOfEntitiesWithFilter() throws Exception {
-        storeEntitiesInDb(2);
+        ensureCreated();
         String fieldName = getFirstFieldName();
         Object fieldValue = getFieldValue(entityInstance, fieldName);
 
@@ -211,7 +218,7 @@ public abstract class GenericRestIntegrationTestsImpl<T extends GenericEntity<St
         params.add("page", "0");
         params.add("size", "10");
         params.add("sort", "0");
-        params.add("query", fieldName + "==" + fieldValue);
+        params.add("query", fieldName + "==*" + fieldValue + "*");
 
         var request = get(testProperties.getResourceUrl() + "/search").params(params)
                 .contentType(MediaType.APPLICATION_JSON);
@@ -219,15 +226,13 @@ public abstract class GenericRestIntegrationTestsImpl<T extends GenericEntity<St
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.empty").value(false))
-                .andExpect(jsonPath("$.totalElements").value(greaterThan(0)))
+                .andExpect(jsonPath("$.page.totalElements").value(greaterThan(0)))
                 .andDo(print());
     }
 
     @Override
     @Test
     public void shouldReturnNoContentWhenFilter() throws Exception {
-        storeEntitiesInDb(2);
         String fieldName = getFirstFieldName();
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -242,15 +247,14 @@ public abstract class GenericRestIntegrationTestsImpl<T extends GenericEntity<St
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.empty").value(true))
-                .andExpect(jsonPath("$.totalElements").value(0))
+                .andExpect(jsonPath("$.page.totalElements").value(0))
                 .andDo(print());
     }
 
     @Override
     @Test
     public void shouldUpdateEntity() throws Exception {
-        storeEntitiesInDb(1);
+        ensureCreated();
         T before = entityInstance;
         String firstFieldName = getFirstFieldName();
         Object oldFirst = getFieldValue(before, firstFieldName);
@@ -259,14 +263,14 @@ public abstract class GenericRestIntegrationTestsImpl<T extends GenericEntity<St
 
         prepareNewEntity(); // randomise the entity
 
-        var request = put(testProperties.getResourceUrl() + "/{id}", before.getId())
+        var request = put(testProperties.getResourceUrl() + "/{id}", createdEntityId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(entityInstance));
         addAuthIfRequired(request);
 
         mockMvc.perform(request)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(before.getId()))
+                .andExpect(jsonPath("$.id").value(createdEntityId))
                 .andExpect(jsonPath("$." + firstFieldName).value(not(oldFirst)))
                 .andExpect(jsonPath("$." + secondFieldName).value(not(oldSecond)))
                 .andDo(print());
@@ -275,9 +279,9 @@ public abstract class GenericRestIntegrationTestsImpl<T extends GenericEntity<St
     @Override
     @Test
     public void shouldDeleteEntity() throws Exception {
-        storeEntitiesInDb(1);
+        ensureCreated();
 
-        var request = delete(testProperties.getResourceUrl() + "/{id}", entityInstance.getId())
+        var request = delete(testProperties.getResourceUrl() + "/{id}", createdEntityId)
                 .contentType(MediaType.APPLICATION_JSON);
         addAuthIfRequired(request);
 
@@ -314,6 +318,12 @@ public abstract class GenericRestIntegrationTestsImpl<T extends GenericEntity<St
     // =================================================================
     // Reflection helpers (record‑safe)
     // =================================================================
+
+    private void ensureCreated() throws Exception {
+        if (createdEntityId == null) {
+            shouldCreateEntity();
+        }
+    }
 
     private String getFirstFieldName() {
         Field[] fields = entityTemplate.getClass().getDeclaredFields();

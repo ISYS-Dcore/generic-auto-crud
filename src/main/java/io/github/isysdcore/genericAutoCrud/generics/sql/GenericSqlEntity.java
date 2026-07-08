@@ -5,9 +5,8 @@
 package io.github.isysdcore.genericAutoCrud.generics.sql;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.github.isysdcore.genericAutoCrud.generics.GenericBaseEntity;
 import jakarta.persistence.*;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,7 +40,7 @@ import java.util.UUID;
  * </ul>
  *
  * @param <ID> the identifier type used as the primary key. Common types are
- *             {@link java.lang.Long} for numeric IDs or {@link java.util.UUID}
+ *             {@link Long} for numeric IDs or {@link UUID}
  *             for UUID-based identifiers
  *
  * @author domingos.fernando
@@ -51,7 +50,7 @@ import java.util.UUID;
 @Setter
 @MappedSuperclass
 @JsonIgnoreProperties(value = {"deleted", "deletedAt", "updatedAt", "createdAt", "updatedBy", "deletedBy"}, allowSetters = true)
-public abstract class GenericEntity<ID extends Serializable> implements Serializable {
+public abstract class GenericSqlEntity<ID extends Serializable> implements Serializable, GenericBaseEntity<ID> {
     @Serial
     private static final long serialVersionUID = 1L;
     @Id

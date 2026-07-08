@@ -8,9 +8,9 @@ package io.github.isysdcore.genericAutoCrud.generics.nosql.dto;
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.Node;
 import io.github.isysdcore.genericAutoCrud.generics.dto.GenericDTOMapper;
+import io.github.isysdcore.genericAutoCrud.generics.dto.GenericRestServiceDto;
 import io.github.isysdcore.genericAutoCrud.generics.nosql.GenericNoSqlEntity;
 import io.github.isysdcore.genericAutoCrud.generics.nosql.GenericNoSqlRepository;
-import io.github.isysdcore.genericAutoCrud.generics.sql.GenericRestServiceAbstract;
 import io.github.isysdcore.genericAutoCrud.query.mongo.MongoPropertyResolver;
 import io.github.isysdcore.genericAutoCrud.query.mongo.MongoRsqlVisitor;
 import io.github.isysdcore.genericAutoCrud.utils.DefaultSearchParameters;
@@ -47,7 +47,7 @@ public abstract class GenericNoSqlRestServiceAbstractDto<
         ENTITY extends GenericNoSqlEntity,
         DTO,
         REPOSITORY extends GenericNoSqlRepository<ENTITY>,
-        MAPPER extends GenericDTOMapper<DTO, ENTITY>> {
+        MAPPER extends GenericDTOMapper<DTO, ENTITY>> implements GenericRestServiceDto<DTO, String> {
 
     @Autowired
     public REPOSITORY repository;
@@ -74,7 +74,7 @@ public abstract class GenericNoSqlRestServiceAbstractDto<
            ENTITY savedEntity = repository.save(entity);
            return mapper.toDto(savedEntity);
         } catch (Exception ex) {
-            Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GenericNoSqlRestServiceAbstractDto.class.getName()).log(Level.SEVERE, null, ex);
             ex.printStackTrace();
         }
         return null;
@@ -90,7 +90,7 @@ public abstract class GenericNoSqlRestServiceAbstractDto<
             throw new IllegalArgumentException("ID cannot be null for search on database");
         }
         return repository.findByIdAndDeletedFalse(id).map(mapper::toDto).orElseThrow(() -> {
-            Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, new RuntimeException("Error accessing find entity  of type "+ entityClass.getName() +" by id "));
+            Logger.getLogger(GenericNoSqlRestServiceAbstractDto.class.getName()).log(Level.SEVERE, null, new RuntimeException("Error accessing find entity  of type "+ entityClass.getName() +" by id "));
             return new EntityNotFoundException("Error was unable to find entity with id: " + id + " on database.");
         });
     }
@@ -161,14 +161,14 @@ public abstract class GenericNoSqlRestServiceAbstractDto<
                                     fd.set(updatedEntity, oldField.get(oldEntity));
                                 }
                             } catch (NoSuchFieldException | IllegalAccessException e) {
-                                Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, e);
+                                Logger.getLogger(GenericNoSqlRestServiceAbstractDto.class.getName()).log(Level.SEVERE, null, e);
                             }
                         });
                         updatedEntity.setCreatedAt(oldEntity.getCreatedAt());
                         updatedEntity.setUpdatedAt(Instant.now());
                         updatedEntity.setId(id);
                     } catch (SecurityException | IllegalArgumentException ex) {
-                        Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GenericNoSqlRestServiceAbstractDto.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     return mapper.toDto(repository.save(updatedEntity));
                 }) //
@@ -203,7 +203,7 @@ public abstract class GenericNoSqlRestServiceAbstractDto<
                                     fd.set(updatedEntity, oldField.get(oldEntity));
                                 }
                             } catch (NoSuchFieldException | IllegalAccessException e) {
-                                Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, e);
+                                Logger.getLogger(GenericNoSqlRestServiceAbstractDto.class.getName()).log(Level.SEVERE, null, e);
                             }
                         });
                         updatedEntity.setCreatedAt(oldEntity.getCreatedAt());
@@ -211,7 +211,7 @@ public abstract class GenericNoSqlRestServiceAbstractDto<
                         updatedEntity.setUpdatedAt(Instant.now());
                         updatedEntity.setId(id);
                     } catch (SecurityException | IllegalArgumentException ex) {
-                        Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GenericNoSqlRestServiceAbstractDto.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     return mapper.toDto(repository.save(updatedEntity));
                 }) //
@@ -231,7 +231,7 @@ public abstract class GenericNoSqlRestServiceAbstractDto<
                         oldEntity.setDeletedAt(Instant.now());
                         oldEntity.setDeleted(Boolean.TRUE);
                     } catch (Exception ex) {
-                        Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GenericNoSqlRestServiceAbstractDto.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     return mapper.toDto(repository.save(oldEntity));
                 }) //
@@ -250,10 +250,10 @@ public abstract class GenericNoSqlRestServiceAbstractDto<
                 .map(oldEntity -> {
                     try {
                         oldEntity.setDeletedAt(Instant.now());
-                        oldEntity.setDeleted(Boolean.TRUE);
                         oldEntity.setDeletedBy(deletedBy);
+                        
                     } catch (Exception ex) {
-                        Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GenericNoSqlRestServiceAbstractDto.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     return mapper.toDto(repository.save(oldEntity));
                 }) //

@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.github.isysdcore.genericAutoCrud.generics.nosql;
+package io.github.isysdcore.genericAutoCrud.generics;
 
 
-import io.github.isysdcore.genericAutoCrud.generics.GenericModelAssembler;
-import io.github.isysdcore.genericAutoCrud.generics.GenericRestController;
+import io.github.isysdcore.genericAutoCrud.ex.ResourceNotFoundException;
+import io.github.isysdcore.genericAutoCrud.generics.sql.GenericSqlEntity;
 import io.github.isysdcore.genericAutoCrud.utils.Constants;
 import io.github.isysdcore.genericAutoCrud.utils.DefaultSearchParameters;
 import lombok.Getter;
@@ -17,24 +17,30 @@ import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.Serializable;
+
 /**
- * Abstract base REST controller for MongoDB entities.
+ * Abstract base REST controller providing generic CRUD endpoints for entity-based APIs for SQL Databases.
  *
- * <p>This class provides a generic implementation of common REST operations,
- * delegating business logic to a service layer and exposing standardized
- * endpoints for CRUD functionality.</p>
+ * <p>This class defines a reusable REST controller layer that delegates business logic
+ * to a service implementation, enabling consistent CRUD operations across all entities
+ * without requiring repetitive controller code.</p>
  *
- * <p>It is designed to be extended by concrete controllers to reduce boilerplate
- * and enforce consistency across MongoDB-based REST APIs.</p>
+ * <p>It is designed for entity-based APIs where entities are exposed directly (not DTOs),
+ * and acts as a standard foundation for REST controllers in the application.</p>
  *
- * @param <ENTITY> the entity type representing the MongoDB document
- * @param <SERVICE> the service implementation responsible for business logic
- *                  and persistence operations
- * with a String as ID type for all entities
+ * @param <ENTITY> the entity type representing the database model
+ * @param <SERVICE> the service implementation responsible for business logic and persistence
+ *                  operations for the given entity
+ * @param <ID> the identifier type of the entity, must be {@link Serializable}
  *
  * @author domingos.fernando
  */
-public abstract class GenericNoSqlRestControllerAbstract<ENTITY extends GenericNoSqlEntity, SERVICE extends GenericNoSqlRestServiceAbstract<ENTITY,?>> implements GenericRestController<ENTITY, String> {
+public abstract class GenericRestControllerAbstract<
+        ENTITY extends GenericBaseEntity<ID>,
+        SERVICE extends GenericRestService<
+                        ENTITY,ID>, ID extends Serializable>
+        implements GenericRestController<ENTITY, ID> {
 
     @Getter
     private final String RESOIRCE_NAME = "";
@@ -42,10 +48,17 @@ public abstract class GenericNoSqlRestControllerAbstract<ENTITY extends GenericN
     private final GenericModelAssembler<ENTITY> assembler;
     @Getter
     private final SERVICE serviceImpl;
+    private ENTITY object;
 
-    public GenericNoSqlRestControllerAbstract(SERVICE serviceImpl) {
+    public GenericRestControllerAbstract(SERVICE serviceImpl) {
         this.assembler = new GenericModelAssembler<>( this);
         this.serviceImpl = serviceImpl;
+    }
+
+    public GenericRestControllerAbstract(SERVICE serviceImpl, ENTITY entity) {
+        this.assembler = new GenericModelAssembler<>( this);
+        this.serviceImpl = serviceImpl;
+        this.object = entity;
     }
 
     @Override
@@ -80,9 +93,12 @@ public abstract class GenericNoSqlRestControllerAbstract<ENTITY extends GenericN
 
     @Override
     @GetMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
-    public ResponseEntity<EntityModel<ENTITY>> findById(@PathVariable(name = "id") String id) {
+    public ResponseEntity<EntityModel<ENTITY>> findById(@PathVariable(name = "id") ID id) {
         try{
             ENTITY entity = serviceImpl.findById(id);
+            if (entity == null) {
+                throw new ResourceNotFoundException("Resource of type " + object.getClass().getSimpleName() + " with id " + id + " not found");
+            }
             return ResponseEntity.ok(assembler.toModel(entity));
         }catch (Exception e){
             throw e;
@@ -105,10 +121,14 @@ public abstract class GenericNoSqlRestControllerAbstract<ENTITY extends GenericN
 
     @Override
     @PutMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
-    public ResponseEntity<?> update(@PathVariable(name = "id") String id, @RequestBody ENTITY newEntity) {
+    public ResponseEntity<?> update(@PathVariable(name = "id") ID id, @RequestBody ENTITY newEntity) {
 
         try{
-            EntityModel<ENTITY> entityModel = assembler.toModel(serviceImpl.update(id, newEntity));
+            ENTITY entity = serviceImpl.update(id, newEntity);
+            if (entity == null) {
+                throw new ResourceNotFoundException("Resource of type " + object.getClass().getSimpleName() + " with id " + id + " not found");
+            }
+            EntityModel<ENTITY> entityModel = assembler.toModel(entity);
             return ResponseEntity //
                     .ok(entityModel);
         }catch (Exception e){
@@ -119,7 +139,7 @@ public abstract class GenericNoSqlRestControllerAbstract<ENTITY extends GenericN
 
     @Override
     @DeleteMapping(RESOIRCE_NAME + Constants.RESOURCE_BY_ID)
-    public ResponseEntity<?> delete(@PathVariable(name = "id") String id) {
+    public ResponseEntity<?> delete(@PathVariable(name = "id") ID id) {
         try{
             EntityModel<ENTITY> entityModel = assembler.toModel(serviceImpl.delete(id));
             return ResponseEntity //

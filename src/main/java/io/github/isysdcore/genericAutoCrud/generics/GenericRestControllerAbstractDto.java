@@ -3,13 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.github.isysdcore.genericAutoCrud.generics.sql.dto;
+package io.github.isysdcore.genericAutoCrud.generics;
 
 
-import io.github.isysdcore.genericAutoCrud.generics.sql.GenericEntity;
 import io.github.isysdcore.genericAutoCrud.generics.dto.GenericDto;
 import io.github.isysdcore.genericAutoCrud.generics.dto.GenericModelAssemblerDto;
 import io.github.isysdcore.genericAutoCrud.generics.dto.GenericRestControllerDto;
+import io.github.isysdcore.genericAutoCrud.generics.dto.GenericRestServiceDto;
+import io.github.isysdcore.genericAutoCrud.generics.sql.GenericSqlEntity;
 import io.github.isysdcore.genericAutoCrud.utils.Constants;
 import io.github.isysdcore.genericAutoCrud.utils.DefaultSearchParameters;
 import lombok.Getter;
@@ -33,24 +34,25 @@ import java.io.Serializable;
  * that handles mapping between entities and DTOs, as well as persistence
  * operations.</p>
  *
- * @param <ENTITY> the entity type, extending {@link GenericEntity}
+ * @param <ENTITY> the entity type, extending {@link GenericSqlEntity}
  * @param <DTO> the DTO type, extending {@link GenericDto}
  * @param <SERVICE> the service layer implementation responsible for handling
  *                  business logic and entity/DTO conversion
- * @param <ID> the identifier type of the entity, must be {@link java.io.Serializable}
+ * @param <ID> the identifier type of the entity, must be {@link Serializable}
  *
  * @author domingos.fernando
  */
 public abstract class GenericRestControllerAbstractDto<
-        ENTITY extends GenericEntity<ID>,
+        ENTITY extends GenericBaseEntity<ID>,
         DTO,
-        SERVICE extends GenericRestServiceAbstractDto<ENTITY, DTO,?, ?,ID>,
+        SERVICE extends GenericRestServiceDto<DTO,ID>,
         ID extends Serializable> implements GenericRestControllerDto<DTO, ID> {
 
     @Getter
     private final String RESOURCE_NAME = "";
     @Getter
     private final GenericModelAssemblerDto<DTO> assembler;
+    @Getter
     private final SERVICE serviceImpl;
     private ENTITY object;
 
@@ -146,9 +148,5 @@ public abstract class GenericRestControllerAbstractDto<
             throw e;
         }
 
-    }
-
-    public SERVICE getServiceImpl() {
-        return serviceImpl;
     }
 }

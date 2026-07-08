@@ -6,6 +6,7 @@
 package io.github.isysdcore.genericAutoCrud.ex;
 
 import io.github.isysdcore.genericAutoCrud.utils.ApiError;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -99,7 +100,7 @@ public abstract class CustomRestExceptionHandler extends ResponseEntityException
         //
         final String error = ex.getRequestPartName() + " part is missing";
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), error);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+        return ResponseEntity.status(apiError.getStatus()).body(apiError);
     }
 
 
@@ -108,7 +109,7 @@ public abstract class CustomRestExceptionHandler extends ResponseEntityException
         //
         final String error = ex.getParameterName() + " parameter is missing";
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), error);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+        return ResponseEntity.status(apiError.getStatus()).body(apiError);
     }
 
     //
@@ -119,7 +120,7 @@ public abstract class CustomRestExceptionHandler extends ResponseEntityException
         final String error = ex.getName() + " should be of type " + ex.getRequiredType().getName();
 
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), error);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+        return ResponseEntity.status(apiError.getStatus()).body(apiError);
     }
 
     @ExceptionHandler({ConstraintViolationException.class})
@@ -132,44 +133,43 @@ public abstract class CustomRestExceptionHandler extends ResponseEntityException
         }
 
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors, ex.toString());
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+        return ResponseEntity.status(apiError.getStatus()).body(apiError);
     }
 
     //403
     @ExceptionHandler({AccessDeniedException.class})
     public ResponseEntity<Object> handleAccessDeniedException(final Exception ex, final WebRequest request) {
-        log.info("request: {}", request.getUserPrincipal());
+        log.error("Access denied for this resource: {}", request.getUserPrincipal());
         final String error = "Access Denied for " + ex.getLocalizedMessage();
         final ApiError apiError = new ApiError(HttpStatus.FORBIDDEN, ex.getLocalizedMessage(), error, "Access Denied");
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+        return ResponseEntity.status(apiError.getStatus()).body(apiError);
     }
 
     //401
     @ExceptionHandler({AuthenticationException.class, BadCredentialsException.class})
     public ResponseEntity<Object> handleAuthenticationException(final Exception ex, final WebRequest request) {
-        log.info("request: {}", request.getUserPrincipal());
+        log.error("Authentication failed for request: {}", request.getUserPrincipal());
         final String error = "Authentication Failed for: " + ex.getLocalizedMessage();
         final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, ex.getLocalizedMessage(), error, "Authentication Failed");
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+        return ResponseEntity.status(apiError.getStatus()).body(apiError);
     }
 
-    @ExceptionHandler({ResourceNotFoundException.class})
+    @ExceptionHandler({ResourceNotFoundException.class, EntityNotFoundException.class})
     public ResponseEntity<Object> resourceNotFoundException(final Exception ex, final WebRequest request) {
-        log.info("request: {}" , request.getUserPrincipal());
+        log.error("Resource not found for request: {}", request.getUserPrincipal());
         final String error = "Resource not found " + ex.getLocalizedMessage();
         final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ex.getLocalizedMessage(), error, "Not Found ");
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+        return ResponseEntity.status(apiError.getStatus()).body(apiError);
     }
 
     // 404
-
     protected ResponseEntity<Object> handleNoHandlerFoundException(final NoHandlerFoundException ex, final HttpHeaders headers, final HttpStatus status, final WebRequest request) {
         log.info(ex.getClass().getName());
         //
         final String error = "No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL();
 
         final ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ex.getLocalizedMessage(), error);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+        return ResponseEntity.status(apiError.getStatus()).body(apiError);
     }
 
     // 405
@@ -182,7 +182,7 @@ public abstract class CustomRestExceptionHandler extends ResponseEntityException
         ex.getSupportedHttpMethods().forEach(t -> builder.append(t + " "));
 
         final ApiError apiError = new ApiError(HttpStatus.METHOD_NOT_ALLOWED, ex.getLocalizedMessage(), builder.toString());
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+        return ResponseEntity.status(apiError.getStatus()).body(apiError);
     }
 
     // 409
@@ -190,7 +190,7 @@ public abstract class CustomRestExceptionHandler extends ResponseEntityException
     protected ResponseEntity<Object> handleConflict(final RuntimeException ex, final WebRequest request) {
         final String error = ex.getLocalizedMessage();
         final ApiError apiError = new ApiError(HttpStatus.CONFLICT, ex.getLocalizedMessage(), error, findCauseUsingPlainJava(ex.getCause()).toString());
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+        return ResponseEntity.status(apiError.getStatus()).body(apiError);
     }
 
     // 415
@@ -203,7 +203,7 @@ public abstract class CustomRestExceptionHandler extends ResponseEntityException
         ex.getSupportedMediaTypes().forEach(t -> builder.append(t + " "));
 
         final ApiError apiError = new ApiError(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ex.getLocalizedMessage(), builder.substring(0, builder.length() - 2));
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+        return ResponseEntity.status(apiError.getStatus()).body(apiError);
     }
 
     // 500
@@ -213,7 +213,7 @@ public abstract class CustomRestExceptionHandler extends ResponseEntityException
         log.error("error", ex);
         //
         final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getLocalizedMessage(), "error occurred", findCauseUsingPlainJava(ex.getCause()).toString());
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+        return ResponseEntity.status(apiError.getStatus()).body(apiError);
     }
 
     public static Throwable findCauseUsingPlainJava(Throwable throwable) {

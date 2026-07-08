@@ -5,11 +5,12 @@
  */
 package io.github.isysdcore.genericAutoCrud.generics.sql;
 
-import io.github.isysdcore.genericAutoCrud.ex.ResourceNotFoundException;
-import io.github.isysdcore.genericAutoCrud.query.sql.CustomRsqlVisitor;
-import io.github.isysdcore.genericAutoCrud.utils.DefaultSearchParameters;
 import cz.jirutka.rsql.parser.RSQLParser;
 import cz.jirutka.rsql.parser.ast.Node;
+import io.github.isysdcore.genericAutoCrud.ex.ResourceNotFoundException;
+import io.github.isysdcore.genericAutoCrud.generics.GenericRestService;
+import io.github.isysdcore.genericAutoCrud.query.sql.CustomRsqlVisitor;
+import io.github.isysdcore.genericAutoCrud.utils.DefaultSearchParameters;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,14 +38,14 @@ import java.util.logging.Logger;
  * @param <ENTITY> the entity type representing the database model
  * @param <REPOSITORY> the repository responsible for persistence operations
  *                     on the given entity
- * @param <ID> the identifier type of the entity, must be {@link java.io.Serializable}
+ * @param <ID> the identifier type of the entity, must be {@link Serializable}
  *
  * @author domingos.fernando
  */
-public abstract class GenericRestServiceAbstract<
-        ENTITY extends GenericEntity<ID>, 
-        REPOSITORY extends GenericRepository<ENTITY,ID>, 
-        ID extends Serializable>{
+public abstract class GenericSqlRestServiceAbstract<
+        ENTITY extends GenericSqlEntity<ID>,
+        REPOSITORY extends GenericSqlRepository<ENTITY,ID>,
+        ID extends Serializable> implements GenericRestService<ENTITY, ID> {
 
     @Autowired
     public REPOSITORY repository;
@@ -58,7 +59,7 @@ public abstract class GenericRestServiceAbstract<
            newEntity.setCreatedAt(Instant.now());
            return repository.save(newEntity);
         } catch (Exception ex) {
-            Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GenericSqlRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
             ex.printStackTrace();
         }
         return null;
@@ -71,7 +72,7 @@ public abstract class GenericRestServiceAbstract<
      */
     public ENTITY findById(ID id) {
         return repository.findById(id).orElseThrow(() -> {
-            Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, new RuntimeException("Error accessing find entity of type by id "));
+            Logger.getLogger(GenericSqlRestServiceAbstract.class.getName()).log(Level.SEVERE, null, new RuntimeException("Error accessing find entity of type by id "));
             return new EntityNotFoundException("Error was unable to find entity with id: " + id.toString() + " on database.");
         });
     }
@@ -135,7 +136,7 @@ public abstract class GenericRestServiceAbstract<
                                     fd.set(newEntity, oldField.get(oldEntity));
                                 }
                             } catch (NoSuchFieldException | IllegalAccessException e) {
-                                Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, e);
+                                Logger.getLogger(GenericSqlRestServiceAbstract.class.getName()).log(Level.SEVERE, null, e);
                             }
                         });
                         newEntity.setCreatedAt(oldEntity.getCreatedAt());
@@ -143,7 +144,7 @@ public abstract class GenericRestServiceAbstract<
                         newEntity.setUpdatedAt(Instant.now());
                         newEntity.setId(id);
                     } catch (SecurityException | IllegalArgumentException ex) {
-                        Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GenericSqlRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     return repository.save(newEntity);
                 }) //
@@ -171,7 +172,7 @@ public abstract class GenericRestServiceAbstract<
                                     fd.set(newEntity, oldField.get(oldEntity));
                                 }
                             } catch (NoSuchFieldException | IllegalAccessException e) {
-                                Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, e);
+                                Logger.getLogger(GenericSqlRestServiceAbstract.class.getName()).log(Level.SEVERE, null, e);
                             }
                         });
                         newEntity.setCreatedAt(oldEntity.getCreatedAt());
@@ -179,7 +180,7 @@ public abstract class GenericRestServiceAbstract<
                         newEntity.setUpdatedAt(Instant.now());
                         newEntity.setId(id);
                     } catch (SecurityException | IllegalArgumentException ex) {
-                        Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GenericSqlRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     return repository.save(newEntity);
                 }) //
@@ -197,7 +198,7 @@ public abstract class GenericRestServiceAbstract<
                         oldEntity.setDeletedAt(Instant.now());
                         oldEntity.setDeleted(Boolean.TRUE);
                     } catch (Exception ex) {
-                        Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GenericSqlRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     return repository.save(oldEntity);
                 }) //
@@ -217,7 +218,7 @@ public abstract class GenericRestServiceAbstract<
                         oldEntity.setDeleted(Boolean.TRUE);
                         oldEntity.setDeletedBy(deletedBy);
                     } catch (Exception ex) {
-                        Logger.getLogger(GenericRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(GenericSqlRestServiceAbstract.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     return repository.save(oldEntity);
                 }) //
